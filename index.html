@@ -9,69 +9,68 @@
     --bg:#0f1115; --panel:#171a21; --ink:#e7ebf0; --mut:#8b95a5;
     --line:#252a33; --accent:#fc5200; --accent2:#3aa0ff; --good:#34d399;
     --warn:#f59e0b; --err:#ef4444;
-    --z1:#3aa0ff; --z2:#34d399; --z3:#f59e0b; --z4:#fc5200; --z5:#ef4444;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--ink);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:20px;min-height:100vh}
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:16px;min-height:100vh}
   .wrap{max-width:900px;margin:0 auto}
   h1{font-size:24px;font-weight:650;margin:0 0 8px;letter-spacing:-.3px}
   h3{font-size:15px;margin-bottom:10px}
-  .sub{color:var(--mut);font-size:14px;margin:0 0 24px}
+  .sub{color:var(--mut);font-size:14px;margin:0 0 20px}
   .nav{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
   .nav button{background:var(--panel);color:var(--ink);border:1px solid var(--line);
-    padding:8px 16px;border-radius:20px;font-size:14px;cursor:pointer;transition:all .2s}
-  .nav button:hover{border-color:var(--accent)}
+    padding:8px 16px;border-radius:20px;font-size:14px;cursor:pointer}
   .nav button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-  .section{display:none}
-  .section.active{display:block}
-  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:24px}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
-  .k{font-size:12px;color:var(--mut);margin-bottom:8px;line-height:1.4}
-  .v{font-size:26px;font-weight:700;letter-spacing:-.5px}
-  .v small{font-size:14px;font-weight:500;color:var(--mut)}
-  .legend{display:flex;gap:16px;font-size:13px;color:var(--mut);margin:8px 0 12px;flex-wrap:wrap}
-  svg{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin-bottom:20px;width:100%}
-  .axis{font-family:monospace;font-size:11px}
-  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:20px}
+  .section{display:none}.section.active{display:block}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;position:relative}
+  .k{font-size:12px;color:var(--mut);margin-bottom:6px;line-height:1.3}
+  .v{font-size:24px;font-weight:700;letter-spacing:-.5px}
+  .v.txt{font-size:16px;font-weight:650;line-height:1.3}
+  .v small{font-size:13px;font-weight:500;color:var(--mut)}
+  .info-i{position:absolute;top:10px;right:12px;width:18px;height:18px;border-radius:50%;
+    border:1px solid var(--mut);color:var(--mut);font-size:12px;line-height:16px;text-align:center;cursor:pointer}
+  .info-i:hover{border-color:var(--accent2);color:var(--accent2)}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:18px}
+  .legend{display:flex;gap:14px;font-size:13px;color:var(--mut);margin:6px 0 10px;flex-wrap:wrap}
+  .scrollx{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:10px}
+  .scrollx svg{display:block;background:#11141a;border:1px solid var(--line);border-radius:10px}
+  .hint{font-size:11px;color:var(--mut);margin-top:4px}
+  .axis{font-family:monospace;font-size:12px}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line)}
+  th{color:var(--mut);font-weight:500;font-size:12px}
+  .zdot{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:8px;vertical-align:middle}
   /* Plan accordion */
   .wk{border:1px solid var(--line);border-radius:10px;margin-bottom:10px;overflow:hidden}
-  .wk-head{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;background:var(--panel)}
-  .wk-head:hover{background:#1c212b}
+  .wk-head{display:flex;align-items:center;gap:10px;padding:14px;cursor:pointer;background:var(--panel)}
   .wk-head.cur{border-left:3px solid var(--accent)}
-  .wk-title{font-weight:650;font-size:15px}
-  .wk-meta{color:var(--mut);font-size:13px;margin-left:auto;display:flex;gap:14px;flex-wrap:wrap}
-  .chip{font-size:11px;padding:2px 8px;border-radius:10px;background:var(--line);color:var(--ink)}
-  .wk-body{display:none;padding:6px 12px 12px}
-  .wk.open .wk-body{display:block}
-  .wk .arrow{transition:transform .2s;color:var(--mut)}
-  .wk.open .arrow{transform:rotate(90deg)}
-  .day{display:flex;gap:12px;padding:10px 8px;border-top:1px solid var(--line);align-items:flex-start}
-  .day .dl{min-width:46px;font-size:12px;color:var(--mut);padding-top:2px}
+  .wk-title{font-weight:650;font-size:16px}
+  .wk-meta{margin-left:auto;display:flex;gap:10px;align-items:center}
+  .chip{font-size:12px;padding:3px 9px;border-radius:10px;background:var(--line)}
+  .chip.intens{font-weight:800;font-size:14px;background:#23262e}
+  .wk-body{display:none;padding:4px 12px 12px}.wk.open .wk-body{display:block}
+  .arrow{transition:transform .2s;color:var(--mut)}.wk.open .arrow{transform:rotate(90deg)}
+  .day{padding:12px 6px;border-top:1px solid var(--line)}
+  .day.today{background:rgba(252,82,0,.06)}.day.past{opacity:.5}
+  .day-head{display:flex;gap:10px;align-items:baseline}
+  .dl{min-width:42px;font-size:12px;color:var(--mut)}
   .day.today .dl{color:var(--accent);font-weight:700}
-  .day.past{opacity:.5}
-  .day .di{flex:1}
-  .day .dn{font-weight:600;font-size:14px}
-  .day .dd{font-size:12.5px;color:var(--mut);margin-top:2px;line-height:1.45}
-  .zbadge{display:inline-block;font-size:11px;font-weight:700;padding:1px 7px;border-radius:8px;color:#0b0e13}
-  .done-tag{font-size:11px;color:var(--good);margin-left:6px}
+  .dn{font-weight:600;font-size:14px}
+  .zbadge{font-size:11px;font-weight:700;padding:1px 7px;border-radius:8px;color:#0b0e13}
+  .done-tag{font-size:11px;color:var(--good);margin-left:4px}
+  .dd{font-size:12.5px;color:var(--mut);margin-top:4px;line-height:1.45}
+  .zbar{display:flex;height:24px;border-radius:6px;overflow:hidden;margin:8px 0 2px;gap:1px}
+  .zseg{display:flex;align-items:center;justify-content:center;font-size:9px;color:#0b0e13;font-weight:800;min-width:3px}
+  .zbar-leg{font-size:10px;color:var(--mut);display:flex;gap:10px;flex-wrap:wrap}
   /* Workouts */
   .wo{display:flex;gap:12px;padding:12px;background:var(--line);border-radius:10px;margin-bottom:8px;cursor:pointer;align-items:center}
-  .wo:hover{outline:1px solid var(--accent)}
-  .wo-date{font-size:11px;color:var(--mut);min-width:78px}
-  .wo-info{flex:1;min-width:0}
-  .wo-info .name{font-weight:600;margin-bottom:3px}
-  .wo-info .meta{font-size:12px;color:var(--mut)}
-  /* zones table */
-  table{width:100%;border-collapse:collapse;font-size:14px}
-  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
-  th{color:var(--mut);font-weight:500;font-size:12px}
-  .zdot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:8px;vertical-align:middle}
-  /* modal */
+  .wo-date{font-size:11px;color:var(--mut);min-width:76px}
+  .wo-info{flex:1;min-width:0}.wo-info .name{font-weight:600;margin-bottom:3px}.wo-info .meta{font-size:12px;color:var(--mut)}
   .modal{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;z-index:1000;padding:16px}
   .modal.open{display:flex}
   .modal-content{background:var(--panel);padding:22px;border-radius:14px;max-width:520px;width:100%;max-height:86vh;overflow-y:auto;position:relative;border:1px solid var(--line)}
-  .modal-close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--ink);font-size:26px;cursor:pointer;line-height:1}
+  .modal-close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--ink);font-size:26px;cursor:pointer}
   .ana{white-space:pre-wrap;line-height:1.55;font-size:14px;margin-top:10px}
   .muted{color:var(--mut);font-size:13px}
 </style>
@@ -80,7 +79,6 @@
 <div class="wrap">
   <h1>Coach Michel</h1>
   <p class="sub" id="goal-sub">Dashboard d'entrainement</p>
-
   <nav class="nav">
     <button class="active" data-section="dashboard">Tableau de bord</button>
     <button data-section="metrics">Metriques</button>
@@ -88,340 +86,267 @@
     <button data-section="data">Corps</button>
   </nav>
 
-  <!-- DASHBOARD -->
   <div id="dashboard" class="section active">
     <div class="cards" id="fitness-cards"></div>
     <div class="panel">
-      <h3>Forme / Fatigue (CTL / ATL) — 12 semaines + projection</h3>
-      <svg id="fitness-chart" viewBox="0 0 820 200"></svg>
+      <h3>Forme / Fatigue (CTL / ATL) <span class="muted" style="font-weight:400">— 12 sem + projection</span></h3>
+      <div class="scrollx"><svg id="fitness-chart"></svg></div>
+      <div class="hint">← glisse pour balayer la période →</div>
     </div>
     <div class="panel">
       <h3>Volume hebdo</h3>
       <div class="legend"><span style="color:var(--accent)">● km</span> <span style="color:var(--accent2)">● D+</span></div>
-      <svg id="weekly-chart" viewBox="0 0 820 230"></svg>
+      <div class="scrollx"><svg id="weekly-chart"></svg></div>
     </div>
     <div class="panel" id="workouts-panel">
-      <h3>Dernieres sorties <span class="muted">(clic = analyse)</span></h3>
+      <h3>Dernieres sorties <span class="muted" style="font-weight:400">(clic = analyse + camembert)</span></h3>
       <div id="workouts-list"></div>
     </div>
   </div>
 
-  <!-- METRICS -->
   <div id="metrics" class="section">
     <div class="panel">
-      <h3>Zones cardiaques (Karvonen)</h3>
+      <h3>Zones cardiaques <span class="muted" style="font-weight:400">(Karvonen)</span></h3>
       <div id="zones-table"></div>
     </div>
     <div class="panel">
       <h3>Derive cardiaque par semaine</h3>
       <div class="legend">
-        <span style="color:var(--z2)">● Endurance (Z1-2)</span>
+        <span style="color:var(--good)">● Endurance (Z1-2)</span>
         <span style="color:var(--accent)">● Intensite (Z3+)</span>
         <span style="color:var(--err)">--- cible 5%</span>
       </div>
-      <svg id="drift-chart" viewBox="0 0 820 220"></svg>
-      <p class="muted">Decouplage = derive de l'efficience (vitesse/FC) entre la 1re et la 2e moitie. Plus c'est bas, plus l'endurance aerobie est solide.</p>
+      <div class="scrollx"><svg id="drift-chart"></svg></div>
+      <div class="hint">Decouplage FC/allure 2e vs 1re moitie. Sous la barre 0 = tu finis plus efficient (frequent en trail descendant).</div>
     </div>
     <div class="panel">
       <h3>Volume annuel</h3>
-      <svg id="yearly-chart" viewBox="0 0 820 240"></svg>
+      <div class="scrollx"><svg id="yearly-chart"></svg></div>
     </div>
   </div>
 
-  <!-- PLAN -->
   <div id="plan" class="section">
-    <div class="panel">
-      <h3 id="plan-title">Plan</h3>
-      <div id="plan-weeks"></div>
-    </div>
+    <div class="panel"><h3 id="plan-title">Plan</h3><div id="plan-weeks"></div></div>
   </div>
 
-  <!-- DATA -->
   <div id="data" class="section">
     <div class="panel">
-      <h3>Poids & composition (Withings)</h3>
+      <h3>Poids & composition <span class="muted" style="font-weight:400">(Withings)</span></h3>
       <div class="legend"><span style="color:var(--accent)">● poids kg</span> <span style="color:var(--accent2)">● masse grasse %</span></div>
-      <svg id="body-chart" viewBox="0 0 820 220"></svg>
+      <div class="scrollx"><svg id="body-chart"></svg></div>
     </div>
   </div>
 </div>
 
-<div id="modal" class="modal">
-  <div class="modal-content">
-    <button class="modal-close" onclick="closeModal()">×</button>
-    <div id="modal-body"></div>
-  </div>
-</div>
+<div id="modal" class="modal"><div class="modal-content">
+  <button class="modal-close" onclick="closeModal()">×</button><div id="modal-body"></div>
+</div></div>
 
 <script>
 const D = {zones:[], fitness:null, weeks:[], years:[], vol:[], workouts:[], plan:null, body:[], drift:null};
 const ZCOL = {Z1:'#3aa0ff',Z2:'#34d399',Z3:'#f59e0b',Z4:'#fc5200',Z5:'#ef4444'};
-
 async function jget(u){const r=await fetch(u); if(!r.ok) throw new Error(u+' '+r.status); return r.json();}
 
 async function loadData(){
   try{
-    document.querySelectorAll('svg').forEach(s=>s.innerHTML='<text x="410" y="100" text-anchor="middle" fill="var(--mut)">Chargement...</text>');
     const [zones,fit,weekly,yearly,wo,plan,body,drift] = await Promise.all([
-      jget('/api/zones'), jget('/api/fitness-projection'), jget('/api/weekly-volume'),
-      jget('/api/yearly-volume'), jget('/api/workouts/recent'), jget('/api/plan'),
-      jget('/api/body'), jget('/api/hr-drift')
-    ]);
-    D.zones=zones.zones||[]; D.fitness=fit; D.weeks=weekly||[];
-    D.years=yearly.years||[]; D.vol=yearly.vol||[]; D.workouts=wo||[];
-    D.plan=plan; D.body=body||[]; D.drift=drift;
+      jget('/api/zones'),jget('/api/fitness-projection'),jget('/api/weekly-volume'),jget('/api/yearly-volume'),
+      jget('/api/workouts/recent'),jget('/api/plan'),jget('/api/body'),jget('/api/hr-drift')]);
+    D.zones=zones.zones||[]; D.fitness=fit; D.weeks=weekly||[]; D.years=yearly.years||[]; D.vol=yearly.vol||[];
+    D.workouts=wo||[]; D.plan=plan; D.body=body||[]; D.drift=drift;
     renderAll();
-  }catch(e){
-    console.error('Erreur chargement', e);
-    document.querySelectorAll('svg').forEach(s=>s.innerHTML='<text x="410" y="100" text-anchor="middle" fill="var(--err)">Erreur de chargement</text>');
-  }
+  }catch(e){console.error('Erreur chargement',e);
+    document.getElementById('fitness-cards').innerHTML='<div class="card"><div class="k">Erreur de chargement</div></div>';}
 }
-
 function renderAll(){
-  renderFitness(); drawWeeklyChart(); drawYearlyChart();
-  renderZonesTable(); drawDriftChart(); drawBodyChart();
-  renderPlan(); renderWorkouts();
-  if(D.plan && D.plan.target_race){
-    const dt = D.plan.target_race_date ? (' — '+D.plan.target_race_date) : '';
-    document.getElementById('goal-sub').textContent = 'Objectif : '+D.plan.target_race+dt;
-  }
+  renderFitness(); drawWeekly(); drawYearly(); renderZones(); drawDrift(); drawBody(); renderPlan(); renderWorkouts();
+  if(D.plan&&D.plan.target_race){const dt=D.plan.target_race_date?(' — '+D.plan.target_race_date):'';
+    document.getElementById('goal-sub').textContent='Objectif : '+D.plan.target_race+dt;}
 }
+function initNav(){document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  b.classList.add('active'); document.getElementById(b.dataset.section).classList.add('active');
+  setTimeout(renderAll,30); // recalcule les charts une fois l'onglet visible
+}));}
 
-function initNav(){
-  document.querySelectorAll('.nav button').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
-      document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById(btn.dataset.section).classList.add('active');
-    });
-  });
-}
+function setSvg(id,W,H){const el=document.getElementById(id);el.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  el.setAttribute('height',H);el.style.width=W+'px';el.style.maxWidth='none';return el;}
 
-// ---------- Fitness ----------
+// ---- Fitness ----
+function infoFitness(){openModalHtml('<h3>Forme / Fatigue — comment lire</h3>'+
+  '<div class="ana muted"><b>CTL (forme)</b> = charge moyenne longue (~6 sem) : ton niveau de fond.\n'+
+  '<b>ATL (fatigue)</b> = charge courte (~1-2 sem) : ta fatigue du moment.\n\n'+
+  '• <b>ATL > CTL</b> : tu charges plus que ton fond → fatigue qui monte (normal en bloc, à surveiller).\n'+
+  '• <b>ATL ≈ CTL</b> : équilibre, tu encaisses ta charge.\n'+
+  '• <b>ATL < CTL</b> : tu es frais (affûtage / récup) — vise ça avant une course.\n\n'+
+  'Objectif marathon : monter le CTL progressivement, puis faire redescendre l\'ATL en fin de prépa (taper).</div>');}
 function renderFitness(){
-  const f=D.fitness;
-  const cards=document.getElementById('fitness-cards');
-  if(!f){cards.innerHTML='<div class="card"><div class="k">Pas de donnees</div></div>';return;}
+  const f=D.fitness, cards=document.getElementById('fitness-cards');
+  if(!f){cards.innerHTML='';return;}
   const marge=(f.limit-f.weekLoad).toFixed(1);
-  const tiles=[
-    ['CTL (forme)', f.ctl],
-    ['ATL (fatigue)', f.atl],
-    ['Charge semaine', f.weekLoad+' km'],
-    ['Marge / limite', marge+' km'],
-    ['Statut', f.tsb>=0?'Frais':'Charge'],
-    ['Reco', f.tsb>=0?'Maintenir/pousser':'Allege']
-  ];
-  cards.innerHTML=tiles.map(t=>`<div class="card"><div class="k">${t[0]}</div><div class="v">${t[1]}</div></div>`).join('');
-
-  const hist=f.history||[];
-  if(!hist.length){document.getElementById('fitness-chart').innerHTML='<text x="410" y="100" text-anchor="middle" fill="var(--mut)">Pas de donnees</text>';return;}
-  const w=820,h=200,L=40,R=34,T=22,B=26,iw=w-L-R,ih=h-T-B;
-  let mx=60; hist.forEach(d=>{mx=Math.max(mx,d.ctl,d.atl);}); mx*=1.15;
-  const n=hist.length,gap=iw/Math.max(1,n-1);
-  const Y=v=>T+ih-v/mx*ih, X=i=>L+gap*i;
-  let s=`<line x1="${L}" y1="${T+ih}" x2="${w-R}" y2="${T+ih}" stroke="var(--line)"/>`;
+  cards.innerHTML=
+    `<div class="card"><span class="info-i" onclick="infoFitness()">i</span><div class="k">CTL (forme)</div><div class="v">${f.ctl}</div></div>`+
+    `<div class="card"><span class="info-i" onclick="infoFitness()">i</span><div class="k">ATL (fatigue)</div><div class="v">${f.atl}</div></div>`+
+    `<div class="card"><div class="k">Charge semaine</div><div class="v">${f.weekLoad}<small> km</small></div></div>`+
+    `<div class="card"><div class="k">Marge / limite ${f.limit}km</div><div class="v">${marge}<small> km</small></div></div>`+
+    `<div class="card"><div class="k">Statut</div><div class="v txt">${f.tsb>=0?'Frais':'En charge'}</div></div>`+
+    `<div class="card"><div class="k">Reco</div><div class="v txt">${f.tsb>=0?'Maintenir':'Alleger'}</div></div>`;
+  const hist=f.history||[]; if(!hist.length){return;}
+  const n=hist.length,H=240,W=Math.max(820,n*52),L=42,R=34,T=24,B=28,iw=W-L-R,ih=H-T-B;
+  let mx=60; hist.forEach(d=>mx=Math.max(mx,d.ctl,d.atl)); mx*=1.15;
+  const gap=iw/Math.max(1,n-1),Y=v=>T+ih-v/mx*ih,X=i=>L+gap*i;
+  let s=`<line x1="${L}" y1="${T+ih}" x2="${W-R}" y2="${T+ih}" stroke="var(--line)"/>`;
   [0,20,40,60].forEach(g=>{if(g>mx)return;const y=Y(g);
-    s+=`<line x1="${L}" y1="${y}" x2="${w-R}" y2="${y}" stroke="var(--line)" stroke-dasharray="2 4"/>`;
-    s+=`<text class="axis" x="${L-6}" y="${y+3}" text-anchor="end" fill="var(--mut)">${g}</text>`;});
-  const seg=(key,col,dash)=>{
-    const real=hist.filter(d=>!d.is_projection), proj=hist.filter(d=>d.is_projection);
-    let pts=hist.map((d,i)=>[X(i),Y(d[key])]);
-    let rp=pts.slice(0,real.length);
-    s+=`<polyline fill="none" stroke="${col}" stroke-width="3" points="${rp.map(p=>p.join(',')).join(' ')}"/>`;
-    rp.forEach(p=>s+=`<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="${col}"/>`);
-    if(proj.length){let pp=pts.slice(real.length-1);
-      s+=`<polyline fill="none" stroke="${col}" stroke-width="2" stroke-dasharray="4 4" opacity=".7" points="${pp.map(p=>p.join(',')).join(' ')}"/>`;}
-  };
-  seg('ctl','var(--accent2)'); seg('atl','var(--warn)');
-  hist.forEach((d,i)=>{if(i%2===0||i===n-1)s+=`<text class="axis" x="${X(i)}" y="${T+ih+16}" text-anchor="middle" fill="var(--mut)" font-size="10">S${d.week}${d.is_projection?'*':''}</text>`;});
-  s+=`<text class="axis" x="${L}" y="${T-8}" fill="var(--accent2)" font-size="11" font-weight="600">CTL forme</text>`;
-  s+=`<text class="axis" x="${L+78}" y="${T-8}" fill="var(--warn)" font-size="11" font-weight="600">ATL fatigue</text>`;
-  s+=`<text class="axis" x="${L+170}" y="${T-8}" fill="var(--mut)" font-size="10">* projection plan</text>`;
-  document.getElementById('fitness-chart').innerHTML=s;
+    s+=`<line x1="${L}" y1="${y}" x2="${W-R}" y2="${y}" stroke="var(--line)" stroke-dasharray="2 4"/><text class="axis" x="${L-6}" y="${y+4}" text-anchor="end" fill="var(--mut)">${g}</text>`;});
+  const real=hist.filter(d=>!d.is_projection).length;
+  [['ctl','#3aa0ff'],['atl','#f59e0b']].forEach(([k,c])=>{
+    const pts=hist.map((d,i)=>[X(i),Y(d[k])]);
+    s+=`<polyline fill="none" stroke="${c}" stroke-width="3" points="${pts.slice(0,real).map(p=>p.join(',')).join(' ')}"/>`;
+    pts.slice(0,real).forEach(p=>s+=`<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="${c}"/>`);
+    if(real<n)s+=`<polyline fill="none" stroke="${c}" stroke-width="2" stroke-dasharray="4 4" opacity=".7" points="${pts.slice(real-1).map(p=>p.join(',')).join(' ')}"/>`;});
+  hist.forEach((d,i)=>{s+=`<text class="axis" x="${X(i)}" y="${T+ih+18}" text-anchor="middle" fill="var(--mut)" font-size="11">S${d.week}${d.is_projection?'*':''}</text>`;});
+  s+=`<text x="${L}" y="${T-8}" fill="#3aa0ff" font-size="12" font-weight="700">CTL forme</text><text x="${L+82}" y="${T-8}" fill="#f59e0b" font-size="12" font-weight="700">ATL fatigue</text>`;
+  setSvg('fitness-chart',W,H).innerHTML=s;
 }
-
-// ---------- Bar charts ----------
-function drawWeeklyChart(){
-  const wk=D.weeks; const el=document.getElementById('weekly-chart');
-  if(!wk||!wk.length){el.innerHTML='<text x="410" y="115" text-anchor="middle" fill="var(--mut)">Pas de donnees</text>';return;}
-  const w=820,h=230,L=34,R=40,T=14,B=28,iw=w-L-R,ih=h-T-B;
-  const n=wk.length,gap=iw/n,bw=gap*0.55;
-  let kmMax=10; wk.forEach(d=>kmMax=Math.max(kmMax,d.km)); kmMax*=1.2;
-  let dMax=100; wk.forEach(d=>dMax=Math.max(dMax,d.dplus)); dMax*=1.2;
-  let s=`<line x1="${L}" y1="${T+ih}" x2="${w-R}" y2="${T+ih}" stroke="var(--line)"/>`;
-  for(let g=0;g<=kmMax;g+=Math.ceil(kmMax/4/5)*5){const y=T+ih-g/kmMax*ih;
-    s+=`<line x1="${L}" y1="${y}" x2="${w-R}" y2="${y}" stroke="var(--line)" stroke-dasharray="2 4"/>`;
-    s+=`<text class="axis" x="${L-6}" y="${y+3}" text-anchor="end" fill="var(--mut)">${g}</text>`;}
+// ---- Weekly volume ----
+function drawWeekly(){
+  const wk=D.weeks; if(!wk||!wk.length){return;}
+  const n=wk.length,H=250,W=Math.max(820,n*48),L=36,R=42,T=14,B=30,iw=W-L-R,ih=H-T-B;
+  const gap=iw/n,bw=gap*0.55; let kmMax=10,dMax=100; wk.forEach(d=>{kmMax=Math.max(kmMax,d.km);dMax=Math.max(dMax,d.dplus);}); kmMax*=1.2;dMax*=1.2;
+  let s=`<line x1="${L}" y1="${T+ih}" x2="${W-R}" y2="${T+ih}" stroke="var(--line)"/>`;
+  const step=Math.max(5,Math.ceil(kmMax/4/5)*5);
+  for(let g=0;g<=kmMax;g+=step){const y=T+ih-g/kmMax*ih;s+=`<line x1="${L}" y1="${y}" x2="${W-R}" y2="${y}" stroke="var(--line)" stroke-dasharray="2 4"/><text class="axis" x="${L-6}" y="${y+4}" text-anchor="end" fill="var(--mut)">${g}</text>`;}
   wk.forEach((d,i)=>{const x=L+gap*i+(gap-bw)/2,bh=d.km/kmMax*ih,y=T+ih-bh;
-    s+=`<rect x="${x}" y="${y}" width="${bw}" height="${bh}" rx="2.5" fill="var(--accent)"/>`;
-    s+=`<text class="axis" x="${x+bw/2}" y="${T+ih+15}" text-anchor="middle" fill="var(--mut)">S${d.s}</text>`;});
-  let pts=wk.map((d,i)=>[L+gap*i+gap/2, T+ih-d.dplus/dMax*ih]);
+    s+=`<rect x="${x}" y="${y}" width="${bw}" height="${bh}" rx="2.5" fill="var(--accent)"/><text class="axis" x="${x+bw/2}" y="${T+ih+16}" text-anchor="middle" fill="var(--mut)" font-size="11">S${d.s}</text>`;});
+  const pts=wk.map((d,i)=>[L+gap*i+gap/2,T+ih-d.dplus/dMax*ih]);
   s+=`<polyline fill="none" stroke="var(--accent2)" stroke-width="2" points="${pts.map(p=>p.join(',')).join(' ')}"/>`;
-  document.getElementById('weekly-chart').innerHTML=s;
+  setSvg('weekly-chart',W,H).innerHTML=s;
 }
-function drawYearlyChart(){
-  const yr=D.years; const el=document.getElementById('yearly-chart');
-  if(!yr||!yr.length){el.innerHTML='<text x="410" y="120" text-anchor="middle" fill="var(--mut)">Pas de donnees</text>';return;}
-  const w=820,h=240,L=42,R=12,T=14,B=30,iw=w-L-R,ih=h-T-B;
-  const n=yr.length,gap=iw/n,bw=gap*0.5;
-  let vMax=100; D.vol.forEach(v=>vMax=Math.max(vMax,v)); vMax*=1.15;
-  let s=`<line x1="${L}" y1="${T+ih}" x2="${w-R}" y2="${T+ih}" stroke="var(--line)"/>`;
+// ---- Yearly ----
+function drawYearly(){
+  const yr=D.years; if(!yr||!yr.length){return;}
+  const n=yr.length,H=250,W=Math.max(700,n*64),L=44,R=14,T=16,B=30,iw=W-L-R,ih=H-T-B;
+  const gap=iw/n,bw=gap*0.5; let vMax=100; D.vol.forEach(v=>vMax=Math.max(vMax,v)); vMax*=1.15;
+  let s=`<line x1="${L}" y1="${T+ih}" x2="${W-R}" y2="${T+ih}" stroke="var(--line)"/>`;
   yr.forEach((y,i)=>{const x=L+gap*i+(gap-bw)/2,bh=D.vol[i]/vMax*ih,yy=T+ih-bh;
-    s+=`<rect x="${x}" y="${yy}" width="${bw}" height="${bh}" rx="2.5" fill="var(--accent)"/>`;
-    s+=`<text class="axis" x="${x+bw/2}" y="${yy-4}" text-anchor="middle" fill="var(--mut)" font-size="10">${Math.round(D.vol[i])}</text>`;
-    s+=`<text class="axis" x="${x+bw/2}" y="${T+ih+15}" text-anchor="middle" fill="var(--mut)">${y}</text>`;});
-  document.getElementById('yearly-chart').innerHTML=s;
+    s+=`<rect x="${x}" y="${yy}" width="${bw}" height="${bh}" rx="2.5" fill="var(--accent)"/><text class="axis" x="${x+bw/2}" y="${yy-4}" text-anchor="middle" fill="var(--mut)" font-size="10">${Math.round(D.vol[i])}</text><text class="axis" x="${x+bw/2}" y="${T+ih+16}" text-anchor="middle" fill="var(--mut)" font-size="11">${y}</text>`;});
+  setSvg('yearly-chart',W,H).innerHTML=s;
 }
-function drawBodyChart(){
-  const bd=D.body; const el=document.getElementById('body-chart');
-  if(!bd||!bd.length){el.innerHTML='<text x="410" y="110" text-anchor="middle" fill="var(--mut)">Pas de donnees</text>';return;}
-  const w=820,h=220,L=42,R=42,T=16,B=28,iw=w-L-R,ih=h-T-B;
-  const n=bd.length,gap=iw/Math.max(1,n-1);
-  let wMin=999,wMax=0; bd.forEach(d=>{wMin=Math.min(wMin,d.weight);wMax=Math.max(wMax,d.weight);});
-  wMin=Math.floor(wMin-1); wMax=Math.ceil(wMax+1);
-  const fats=bd.filter(d=>d.fat!=null).map(d=>d.fat); let fMin=fats.length?Math.floor(Math.min(...fats)-1):10,fMax=fats.length?Math.ceil(Math.max(...fats)+1):20;
-  let s=`<line x1="${L}" y1="${T+ih}" x2="${w-R}" y2="${T+ih}" stroke="var(--line)"/>`;
-  for(let g=wMin;g<=wMax;g+=Math.max(1,Math.round((wMax-wMin)/4))){const y=T+ih-(g-wMin)/(wMax-wMin)*ih;
-    s+=`<text class="axis" x="${L-6}" y="${y+3}" text-anchor="end" fill="var(--mut)">${g}kg</text>`;
-    s+=`<line x1="${L}" y1="${y}" x2="${w-R}" y2="${y}" stroke="var(--line)" stroke-dasharray="2 4"/>`;}
-  let wp=bd.map((d,i)=>[L+gap*i, T+ih-(d.weight-wMin)/(wMax-wMin)*ih]);
-  s+=`<polyline fill="none" stroke="var(--accent)" stroke-width="2.5" points="${wp.map(p=>p.join(',')).join(' ')}"/>`;
-  wp.forEach(p=>s+=`<circle cx="${p[0]}" cy="${p[1]}" r="2.6" fill="var(--accent)"/>`);
-  if(fats.length){let fp=bd.map((d,i)=>d.fat!=null?[L+gap*i, T+ih-(d.fat-fMin)/(fMax-fMin)*ih]:null).filter(Boolean);
-    s+=`<polyline fill="none" stroke="var(--accent2)" stroke-width="2" points="${fp.map(p=>p.join(',')).join(' ')}"/>`;
-    fp.forEach(p=>s+=`<circle cx="${p[0]}" cy="${p[1]}" r="2.4" fill="var(--accent2)"/>`);
-    [fMin,Math.round((fMin+fMax)/2),fMax].forEach(g=>{const y=T+ih-(g-fMin)/(fMax-fMin)*ih;
-      s+=`<text class="axis" x="${w-R+6}" y="${y+3}" text-anchor="start" fill="var(--accent2)">${g}%</text>`;});}
-  bd.forEach((d,i)=>{if(i%Math.ceil(n/6)===0||i===n-1)s+=`<text class="axis" x="${L+gap*i}" y="${T+ih+16}" text-anchor="middle" fill="var(--mut)" font-size="10">${d.date.slice(5)}</text>`;});
-  document.getElementById('body-chart').innerHTML=s;
+// ---- Body ----
+function drawBody(){
+  const bd=D.body; if(!bd||!bd.length){return;}
+  const n=bd.length,H=230,W=Math.max(820,n*22),L=44,R=44,T=16,B=28,iw=W-L-R,ih=H-T-B;
+  const gap=iw/Math.max(1,n-1); let wMin=999,wMax=0; bd.forEach(d=>{wMin=Math.min(wMin,d.weight);wMax=Math.max(wMax,d.weight);});
+  wMin=Math.floor(wMin-1);wMax=Math.ceil(wMax+1);
+  const fats=bd.filter(d=>d.fat!=null).map(d=>d.fat);let fMin=fats.length?Math.floor(Math.min(...fats)-1):10,fMax=fats.length?Math.ceil(Math.max(...fats)+1):20;
+  let s=`<line x1="${L}" y1="${T+ih}" x2="${W-R}" y2="${T+ih}" stroke="var(--line)"/>`;
+  for(let g=wMin;g<=wMax;g+=Math.max(1,Math.round((wMax-wMin)/4))){const y=T+ih-(g-wMin)/(wMax-wMin)*ih;s+=`<text class="axis" x="${L-6}" y="${y+4}" text-anchor="end" fill="var(--mut)">${g}kg</text><line x1="${L}" y1="${y}" x2="${W-R}" y2="${y}" stroke="var(--line)" stroke-dasharray="2 4"/>`;}
+  const wp=bd.map((d,i)=>[L+gap*i,T+ih-(d.weight-wMin)/(wMax-wMin)*ih]);
+  s+=`<polyline fill="none" stroke="var(--accent)" stroke-width="2.5" points="${wp.map(p=>p.join(',')).join(' ')}"/>`;wp.forEach(p=>s+=`<circle cx="${p[0]}" cy="${p[1]}" r="2.6" fill="var(--accent)"/>`);
+  if(fats.length){const fp=bd.map((d,i)=>d.fat!=null?[L+gap*i,T+ih-(d.fat-fMin)/(fMax-fMin)*ih]:null).filter(Boolean);
+    s+=`<polyline fill="none" stroke="var(--accent2)" stroke-width="2" points="${fp.map(p=>p.join(',')).join(' ')}"/>`;fp.forEach(p=>s+=`<circle cx="${p[0]}" cy="${p[1]}" r="2.4" fill="var(--accent2)"/>`);
+    [fMin,Math.round((fMin+fMax)/2),fMax].forEach(g=>{const y=T+ih-(g-fMin)/(fMax-fMin)*ih;s+=`<text class="axis" x="${W-R+6}" y="${y+4}" text-anchor="start" fill="var(--accent2)">${g}%</text>`;});}
+  bd.forEach((d,i)=>{if(i%Math.ceil(n/8)===0||i===n-1)s+=`<text class="axis" x="${L+gap*i}" y="${T+ih+16}" text-anchor="middle" fill="var(--mut)" font-size="10">${d.date.slice(5)}</text>`;});
+  setSvg('body-chart',W,H).innerHTML=s;
 }
-
-// ---------- Zones table + drift ----------
-function renderZonesTable(){
-  const z=D.zones; if(!z.length){document.getElementById('zones-table').innerHTML='';return;}
-  let h='<table><tr><th>Zone</th><th>%FCR</th><th>FC (bpm)</th><th>Usage</th></tr>';
-  z.forEach(zo=>{h+=`<tr>
-    <td><span class="zdot" style="background:${zo.color}"></span><b>${zo.zone}</b> ${zo.label}</td>
-    <td>${zo.pct_lo}-${zo.pct_hi}%</td>
-    <td><b>${zo.min}-${zo.max}</b></td>
-    <td class="muted">${({Z1:'Recup',Z2:'Endurance / longue',Z3:'Tempo / allure mara',Z4:'Seuil',Z5:'VMA'})[zo.zone]}</td></tr>`;});
-  h+='</table>';
-  document.getElementById('zones-table').innerHTML=h;
+// ---- Zones table (avec allure a plat) ----
+function renderZones(){
+  const z=D.zones; if(!z.length){return;}
+  const usage={Z1:'Recup',Z2:'Endurance / longue',Z3:'Tempo / allure mara',Z4:'Seuil',Z5:'VMA'};
+  let h='<table><tr><th>Zone</th><th>FC (bpm)</th><th>Allure a plat</th><th>Usage</th></tr>';
+  z.forEach(zo=>{h+=`<tr><td><span class="zdot" style="background:${zo.color}"></span><b>${zo.zone}</b> ${zo.label}</td><td><b>${zo.min}-${zo.max}</b></td><td><b>${zo.pace||'-'}</b><small style="color:var(--mut)">/km</small></td><td class="muted">${usage[zo.zone]}</td></tr>`;});
+  document.getElementById('zones-table').innerHTML=h+'</table>';
 }
-function drawDriftChart(){
-  const dr=D.drift; const el=document.getElementById('drift-chart');
-  const ser=(dr&&dr.series)||[];
-  if(!ser.length){el.innerHTML='<text x="410" y="110" text-anchor="middle" fill="var(--mut)">Pas assez de donnees (streams FC)</text>';return;}
-  const w=820,h=220,L=40,R=20,T=16,B=28,iw=w-L-R,ih=h-T-B;
-  const n=ser.length,gap=iw/Math.max(1,n-1);
-  let mx=8; ser.forEach(d=>{if(d.endurance!=null)mx=Math.max(mx,d.endurance);if(d.intensite!=null)mx=Math.max(mx,d.intensite);}); mx=Math.ceil(mx*1.15);
-  const Y=v=>T+ih-v/mx*ih, X=i=>L+gap*i;
-  let s=`<line x1="${L}" y1="${T+ih}" x2="${w-R}" y2="${T+ih}" stroke="var(--line)"/>`;
-  for(let g=0;g<=mx;g+=Math.max(2,Math.round(mx/4))){const y=Y(g);
-    s+=`<line x1="${L}" y1="${y}" x2="${w-R}" y2="${y}" stroke="var(--line)" stroke-dasharray="2 4"/>`;
-    s+=`<text class="axis" x="${L-6}" y="${y+3}" text-anchor="end" fill="var(--mut)">${g}%</text>`;}
-  // ligne cible
-  if(dr.target){const y=Y(dr.target);
-    s+=`<line x1="${L}" y1="${y}" x2="${w-R}" y2="${y}" stroke="var(--err)" stroke-width="1.5" stroke-dasharray="5 4"/>`;
-    s+=`<text class="axis" x="${w-R}" y="${y-4}" text-anchor="end" fill="var(--err)" font-size="10">cible ${dr.target}%</text>`;}
-  const line=(key,col)=>{
-    let pts=ser.map((d,i)=>d[key]!=null?[X(i),Y(d[key])]:null).filter(Boolean);
-    if(pts.length>1)s+=`<polyline fill="none" stroke="${col}" stroke-width="2.5" points="${pts.map(p=>p.join(',')).join(' ')}"/>`;
-    pts.forEach(p=>s+=`<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="${col}"/>`);
-  };
-  line('endurance','var(--z2)'); line('intensite','var(--accent)');
-  ser.forEach((d,i)=>{if(i%Math.ceil(n/8)===0||i===n-1)s+=`<text class="axis" x="${X(i)}" y="${T+ih+16}" text-anchor="middle" fill="var(--mut)" font-size="10">S${d.week}</text>`;});
-  el.innerHTML=s;
+// ---- Drift (gere les negatifs) ----
+function drawDrift(){
+  const dr=D.drift, ser=(dr&&dr.series)||[];
+  if(!ser.length){setSvg('drift-chart',820,200).innerHTML='<text x="410" y="100" text-anchor="middle" fill="var(--mut)">Pas assez de donnees</text>';return;}
+  const n=ser.length,H=240,W=Math.max(820,n*68),L=44,R=20,T=18,B=28,iw=W-L-R,ih=H-T-B;
+  const gap=iw/Math.max(1,n-1); let dmin=0,dmax=8;
+  ser.forEach(d=>{[d.endurance,d.intensite].forEach(v=>{if(v!=null){dmin=Math.min(dmin,v);dmax=Math.max(dmax,v);}});});
+  dmin=Math.floor(Math.min(dmin,-2)); dmax=Math.ceil(dmax*1.1);
+  const span=dmax-dmin,Y=v=>T+ih-(v-dmin)/span*ih,X=i=>L+gap*i;
+  let s='';
+  for(let g=dmin-(dmin%2);g<=dmax;g+=Math.max(2,Math.round(span/5))){const y=Y(g);
+    s+=`<line x1="${L}" y1="${y}" x2="${W-R}" y2="${y}" stroke="var(--line)" stroke-dasharray="2 4"/><text class="axis" x="${L-6}" y="${y+4}" text-anchor="end" fill="var(--mut)">${g}%</text>`;}
+  const y0=Y(0); s+=`<line x1="${L}" y1="${y0}" x2="${W-R}" y2="${y0}" stroke="var(--mut)" stroke-width="1.5"/>`;
+  if(dr.target){const yt=Y(dr.target);s+=`<line x1="${L}" y1="${yt}" x2="${W-R}" y2="${yt}" stroke="var(--err)" stroke-width="1.5" stroke-dasharray="5 4"/><text class="axis" x="${W-R}" y="${yt-4}" text-anchor="end" fill="var(--err)" font-size="10">cible ${dr.target}%</text>`;}
+  [['endurance','#34d399'],['intensite','#fc5200']].forEach(([k,c])=>{
+    const pts=ser.map((d,i)=>d[k]!=null?[X(i),Y(d[k])]:null).filter(Boolean);
+    if(pts.length>1)s+=`<polyline fill="none" stroke="${c}" stroke-width="2.5" points="${pts.map(p=>p.join(',')).join(' ')}"/>`;
+    pts.forEach(p=>s+=`<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="${c}"/>`);});
+  ser.forEach((d,i)=>s+=`<text class="axis" x="${X(i)}" y="${T+ih+18}" text-anchor="middle" fill="var(--mut)" font-size="11">S${d.week}</text>`);
+  setSvg('drift-chart',W,H).innerHTML=s;
 }
-
-// ---------- Plan (accordion) ----------
+// ---- Plan ----
+function zbar(steps){
+  if(!steps||!steps.length)return '';
+  const segs=steps.map(s=>`<div class="zseg" style="flex:${s.min};background:${s.color}" title="${s.z} ${s.min}min">${s.min>=4?s.z:''}</div>`).join('');
+  const legParts=[...new Set(steps.map(s=>s.z))].map(z=>`<span style="color:${ZCOL[z]}">■ ${z}</span>`).join(' ');
+  const totMin=steps.reduce((a,s)=>a+s.min,0);
+  return `<div class="zbar">${segs}</div><div class="zbar-leg">${legParts} · total ~${totMin} min</div>`;
+}
 function renderPlan(){
-  const p=D.plan; const root=document.getElementById('plan-weeks');
-  document.getElementById('plan-title').textContent = (p&&p.plan_name)||'Plan';
+  const p=D.plan, root=document.getElementById('plan-weeks');
+  document.getElementById('plan-title').textContent=(p&&p.plan_name)||'Plan';
   if(!p||!p.weeks||!p.weeks.length){root.innerHTML='<p class="muted">Aucun plan.</p>';return;}
   root.innerHTML=p.weeks.map((wk,wi)=>{
-    const opened = wk.is_current ? 'open' : '';
-    const cur = wk.is_current ? 'cur' : '';
-    const dr = `${wk.date_start.slice(5)} → ${wk.date_end.slice(5)}`;
-    const days = wk.days.map(d=>{
-      const cls = ['day', d.status==='today'?'today':'', d.status==='past'?'past':''].join(' ');
-      if(d.type==='rest'){
-        return `<div class="${cls}"><div class="dl">${d.dow}</div><div class="di"><div class="dn" style="color:var(--mut);font-weight:500">Repos</div></div></div>`;
-      }
-      const zb = d.zone? `<span class="zbadge" style="background:${ZCOL[d.zone]}">${d.zone} ${d.bpm} bpm</span>` : '';
-      const done = d.done? '<span class="done-tag">✓ fait</span>' : '';
-      const pace = d.pace? ` · ${d.pace}` : '';
-      return `<div class="${cls}"><div class="dl">${d.dow}</div><div class="di">
-        <div class="dn">${d.name} ${zb} ${done}</div>
-        <div class="dd">${d.detail||''}${pace?'<br>Allure cible '+d.pace:''}</div></div></div>`;
+    const open=wk.is_current?'open':'',cur=wk.is_current?'cur':'';
+    const dr=`${wk.date_start.slice(5)} → ${wk.date_end.slice(5)}`;
+    const days=wk.days.map(d=>{
+      const cls=['day',d.status==='today'?'today':'',d.status==='past'?'past':''].join(' ');
+      if(d.type==='rest')return `<div class="${cls}"><div class="day-head"><div class="dl">${d.dow}</div><div class="dn" style="color:var(--mut);font-weight:500">Repos</div></div></div>`;
+      const zb=d.zone?`<span class="zbadge" style="background:${ZCOL[d.zone]}">${d.zone} ${d.bpm}</span>`:'';
+      const done=d.done?'<span class="done-tag">✓ fait</span>':'';
+      return `<div class="${cls}"><div class="day-head"><div class="dl">${d.dow}</div><div class="dn">${d.name} ${zb} ${done}</div></div>
+        ${zbar(d.steps)}
+        <div class="dd">${d.detail||''}${d.pace?' · allure cible '+d.pace:''}</div></div>`;
     }).join('');
-    return `<div class="wk ${opened}" id="wk${wi}">
-      <div class="wk-head ${cur}" onclick="document.getElementById('wk${wi}').classList.toggle('open')">
-        <span class="arrow">▸</span>
-        <span class="wk-title">${wk.is_current?'Cette semaine':'S'+(wk.week_number)} <span class="muted" style="font-weight:400">${dr}</span></span>
-        <span class="wk-meta"><span class="chip">${wk.total_km} km</span><span class="chip">Z4 ${wk.z4_pct}%</span></span>
-      </div>
-      <div class="wk-body">${days}</div>
-    </div>`;
+    return `<div class="wk ${open}" id="wk${wi}"><div class="wk-head ${cur}" onclick="document.getElementById('wk${wi}').classList.toggle('open')">
+      <span class="arrow">▸</span><span class="wk-title">${wk.is_current?'Cette sem.':'S'+wk.week_number} <span class="muted" style="font-weight:400">${dr}</span></span>
+      <span class="wk-meta"><span class="chip">${wk.total_km} km</span><span class="chip intens" title="Index intensite 1-5">Int ${wk.intensity}</span></span>
+    </div><div class="wk-body">${days}</div></div>`;
   }).join('');
 }
-
-// ---------- Workouts + pie ----------
-function piePie(zones,size){ // zones={z1..z5} en %
-  if(!zones) return '';
-  const cx=size/2,cy=size/2,r=size/2-2; let a=-Math.PI/2,s='';
-  const keys=['z1','z2','z3','z4','z5'];
-  const tot=keys.reduce((x,k)=>x+(zones[k]||0),0)||1;
-  keys.forEach(k=>{const v=zones[k]||0; if(v<=0)return;
-    const ang=v/tot*2*Math.PI, x1=cx+r*Math.cos(a), y1=cy+r*Math.sin(a);
-    a+=ang; const x2=cx+r*Math.cos(a), y2=cy+r*Math.sin(a);
-    const large=ang>Math.PI?1:0;
-    s+=`<path d="M${cx},${cy} L${x1.toFixed(1)},${y1.toFixed(1)} A${r},${r} 0 ${large} 1 ${x2.toFixed(1)},${y2.toFixed(1)} Z" fill="${ZCOL[k.toUpperCase()]}"/>`;
-  });
-  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="background:none;border:none;margin:0">${s}</svg>`;
+// ---- Workouts + camembert (detail seulement) ----
+function pie(zones,size){
+  if(!zones)return '';
+  const cx=size/2,cy=size/2,r=size/2-2,keys=['z1','z2','z3','z4','z5'];
+  const tot=keys.reduce((x,k)=>x+(zones[k]||0),0)||1; let a=-Math.PI/2,s='';
+  keys.forEach(k=>{const v=zones[k]||0;if(v<=0)return;const ang=v/tot*2*Math.PI;
+    const x1=cx+r*Math.cos(a),y1=cy+r*Math.sin(a);a+=ang;const x2=cx+r*Math.cos(a),y2=cy+r*Math.sin(a);
+    s+=`<path d="M${cx},${cy} L${x1.toFixed(1)},${y1.toFixed(1)} A${r},${r} 0 ${ang>Math.PI?1:0} 1 ${x2.toFixed(1)},${y2.toFixed(1)} Z" fill="${ZCOL[k.toUpperCase()]}"/>`;});
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="background:none;border:none">${s}</svg>`;
 }
 function renderWorkouts(){
   const list=document.getElementById('workouts-list');
   if(!D.workouts||!D.workouts.length){list.innerHTML='<p class="muted">Aucune sortie.</p>';return;}
   list.innerHTML=D.workouts.map((w,i)=>{
-    const mm=Math.floor(w.time/60), ss=String(w.time%60).padStart(2,'0');
+    const mm=Math.floor(w.time/60),ss=String(w.time%60).padStart(2,'0');
     const pace=w.pace?`${Math.floor(w.pace)}:${String(Math.round((w.pace%1)*60)).padStart(2,'0')}/km`:'';
-    return `<div class="wo" onclick="showWorkoutAnalysis(${i})">
-      <div class="wo-date">${w.date}</div>
+    return `<div class="wo" onclick="showWorkout(${i})"><div class="wo-date">${w.date}</div>
       <div class="wo-info"><div class="name">${w.name||'Sortie'} ${w.hasAnalysis?'<span class="done-tag">analyse ✓</span>':''}</div>
-        <div class="meta">${w.dist}km · ${mm}:${ss} · ${pace} · FC ${w.fcavg}/${w.fcmax}</div></div>
-    </div>`;
+      <div class="meta">${w.dist}km · ${mm}:${ss} · ${pace} · FC ${w.fcavg}/${w.fcmax}</div></div></div>`;
   }).join('');
 }
-async function showWorkoutAnalysis(i){
-  const w=D.workouts[i];
-  const mm=Math.floor(w.time/60), ss=String(w.time%60).padStart(2,'0');
+async function showWorkout(i){
+  const w=D.workouts[i],mm=Math.floor(w.time/60),ss=String(w.time%60).padStart(2,'0');
   const pace=w.pace?`${Math.floor(w.pace)}:${String(Math.round((w.pace%1)*60)).padStart(2,'0')}/km`:'n/d';
-  let zlegend='';
-  if(w.hrZones){zlegend='<div class="legend" style="margin-top:8px">'+['z1','z2','z3','z4','z5'].map(k=>`<span style="color:${ZCOL[k.toUpperCase()]}">● ${k.toUpperCase()} ${w.hrZones[k]||0}%</span>`).join('')+'</div>';}
-  document.getElementById('modal-body').innerHTML=`
-    <h3>${w.name||'Sortie'} <span class="muted" style="font-weight:400">${w.date}</span></h3>
-    <div style="display:flex;gap:16px;align-items:center;margin-top:8px">
-      ${w.hrZones?piePie(w.hrZones,96):'<div class="muted">Pas de capteur FC</div>'}
-      <div class="muted" style="font-size:13.5px;line-height:1.7">
-        ${w.dist} km · D+ ${w.dplus} m<br>Temps ${mm}:${ss} · Allure ${pace}<br>FC moy ${w.fcavg} · FC max ${w.fcmax}</div>
-    </div>${zlegend}
-    <h3 style="margin-top:16px">Analyse Coach Michel</h3>
-    <div id="ana-box" class="ana muted">Chargement de l'analyse…</div>`;
+  let zl=w.hrZones?'<div class="legend" style="margin-top:8px">'+['z1','z2','z3','z4','z5'].map(k=>`<span style="color:${ZCOL[k.toUpperCase()]}">● ${k.toUpperCase()} ${w.hrZones[k]||0}%</span>`).join('')+'</div>':'';
+  document.getElementById('modal-body').innerHTML=`<h3>${w.name||'Sortie'} <span class="muted" style="font-weight:400">${w.date}</span></h3>
+    <div style="display:flex;gap:16px;align-items:center;margin-top:8px">${w.hrZones?pie(w.hrZones,96):'<div class="muted">Pas de capteur FC</div>'}
+    <div class="muted" style="font-size:13.5px;line-height:1.7">${w.dist} km · D+ ${w.dplus} m<br>Temps ${mm}:${ss} · Allure ${pace}<br>FC moy ${w.fcavg} · FC max ${w.fcmax}</div></div>${zl}
+    <h3 style="margin-top:16px">Analyse Coach Michel</h3><div id="ana-box" class="ana muted">Chargement…</div>`;
   document.getElementById('modal').classList.add('open');
-  try{
-    const a=await jget('/api/workout/analysis/'+w.activity_id);
-    document.getElementById('ana-box').classList.remove('muted');
-    document.getElementById('ana-box').textContent=a.analysis_text||'(pas d\'analyse)';
-    if(!w.hasAnalysis) w.hasAnalysis=true, renderWorkouts();
-  }catch(e){
-    document.getElementById('ana-box').textContent='Analyse indisponible pour le moment.';
-  }
+  try{const a=await jget('/api/workout/analysis/'+w.activity_id);
+    const box=document.getElementById('ana-box');box.classList.remove('muted');box.textContent=a.analysis_text||'(pas d\'analyse)';
+    if(!w.hasAnalysis){w.hasAnalysis=true;renderWorkouts();}
+  }catch(e){document.getElementById('ana-box').textContent='Analyse indisponible.';}
 }
+function openModalHtml(html){document.getElementById('modal-body').innerHTML=html;document.getElementById('modal').classList.add('open');}
 function closeModal(){document.getElementById('modal').classList.remove('open');}
-
-document.addEventListener('DOMContentLoaded',()=>{ initNav(); loadData(); });
+document.addEventListener('DOMContentLoaded',()=>{initNav();loadData();});
 </script>
 </body>
 </html>
