@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coach Michel - Wireframe Visuel</title>
+    <link rel="stylesheet" href="design-system.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <span class="logo-icon">CM</span>
+                <span class="logo-text">Coach Michel</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="#metrics" class="nav-item active">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 20V10M12 20V4M6 20v-6"/>
+                    </svg>
+                    <span>Métriques</span>
+                </a>
+                <a href="#summaries" class="nav-item">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    <span>Résumés</span>
+                </a>
+                <a href="#plan" class="nav-item">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 11l3 3L22 4"/>
+                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                    </svg>
+                    <span>Plan</span>
+                </a>
+                <a href="#data" class="nav-item">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                        <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+                        <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+                    </svg>
+                    <span>Données</span>
+                </a>
+                <a href="#chat" class="nav-item">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    <span>Chat</span>
+                </a>
+            </nav>
+
+            <div class="user-profile">
+                <div class="user-avatar">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Michel" alt="Coach Michel">
+                </div>
+                <div class="user-info">
+                    <div class="user-name">Coach Michel</div>
+                    <div class="user-role">En ligne</div>
+                </div>
+                <button class="settings-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                    </svg>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="main-header">
+                <div class="header-left">
+                    <h1 class="page-title">Tableau de bord</h1>
+                    <p class="page-subtitle">Bienvenue, Coach Michel. Voici l'activité du jour.</p>
+                </div>
+                <div class="header-right">
+                    <button class="icon-btn" aria-label="Notifications">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                        </svg>
+                        <span class="badge">3</span>
+                    </button>
+                    <button class="primary-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                        Nouvelle séance
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- Stats Cards -->
+                <div class="card stat-card">
+                    <div class="stat-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value">24</div>
+                        <div class="stat-label">Athlètes actifs</div>
+                        <div class="stat-trend positive">+12% cette semaine</div>
+                    </div>
+                </div>
+
+                <div class="card stat-card">
+                    <div class="stat-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value">18</div>
+                        <div class="stat-label">Séances planifiées</div>
+                        <div class="stat-trend">Aujourd'hui</div>
+                    </div>
+                </div>
+
+                <div class="card stat-card">
+                    <div class="stat-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value">92%</div>
+                        <div class="stat-label">Taux de complétion</div>
+                        <div class="stat-trend positive">+5% vs sem. dernière</div>
+                    </div>
+                </div>
+
+                <div class="card stat-card">
+                    <div class="stat-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value">156</div>
+                        <div class="stat-label">Objectifs atteints</div>
+                        <div class="stat-trend">Ce mois</div>
+                    </div>
+                </div>
+
+                <!-- Main Chart -->
+                <div class="card chart-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Performance hebdomadaire</h3>
+                        <div class="card-actions">
+                            <button class="filter-btn active">Semaine</button>
+                            <button class="filter-btn">Mois</button>
+                            <button class="filter-btn">Année</button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart">
+                            <div class="chart-bar" style="height: 60%">
+                                <div class="chart-value">60%</div>
+                            </div>
+                            <div class="chart-bar" style="height: 80%">
+                                <div class="chart-value">80%</div>
+                            </div>
+                            <div class="chart-bar" style="height: 45%">
+                                <div class="chart-value">45%</div>
+                            </div>
+                            <div class="chart-bar" style="height: 90%">
+                                <div class="chart-value">90%</div>
+                            </div>
+                            <div class="chart-bar" style="height: 70%">
+                                <div class="chart-value">70%</div>
+                            </div>
+                            <div class="chart-bar" style="height: 85%">
+                                <div class="chart-value">85%</div>
+                            </div>
+                            <div class="chart-bar" style="height: 95%">
+                                <div class="chart-value">95%</div>
+                            </div>
+                        </div>
+                        <div class="chart-labels">
+                            <span>Lun</span>
+                            <span>Mar</span>
+                            <span>Mer</span>
+                            <span>Jeu</span>
+                            <span>Ven</span>
+                            <span>Sam</span>
+                            <span>Dim</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Sessions -->
+                <div class="card sessions-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Prochaines séances</h3>
+                        <button class="text-btn">Voir tout</button>
+                    </div>
+                    <div class="sessions-list">
+                        <div class="session-item">
+                            <div class="session-time">
+                                <div class="time">09:00</div>
+                                <div class="date">Auj.</div>
+                            </div>
+                            <div class="session-info">
+                                <div class="athlete-name">Marie Dupont</div>
+                                <div class="session-type">Cardio - Intermittent</div>
+                            </div>
+                            <div class="session-status confirmed">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="session-item">
+                            <div class="session-time">
+                                <div class="time">10:30</div>
+                                <div class="date">Auj.</div>
+                            </div>
+                            <div class="session-info">
+                                <div class="athlete-name">Pierre Martin</div>
+                                <div class="session-type">Musculation - Haut corps</div>
+                            </div>
+                            <div class="session-status confirmed">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="session-item">
+                            <div class="session-time">
+                                <div class="time">14:00</div>
+                                <div class="date">Auj.</div>
+                            </div>
+                            <div class="session-info">
+                                <div class="athlete-name">Sophie Bernard</div>
+                                <div class="session-type">Yoga - Flexibilité</div>
+                            </div>
+                            <div class="session-status pending">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="session-item">
+                            <div class="session-time">
+                                <div class="time">16:00</div>
+                                <div class="date">Auj.</div>
+                            </div>
+                            <div class="session-info">
+                                <div class="athlete-name">Jean Durand</div>
+                                <div class="session-type">CrossFit - WOD</div>
+                            </div>
+                            <div class="session-status confirmed">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Athlete Progress -->
+                <div class="card progress-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Progression athlètes</h3>
+                    </div>
+                    <div class="progress-list">
+                        <div class="progress-item">
+                            <div class="progress-athlete">
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Marie" alt="Marie">
+                                <div>
+                                    <div class="athlete-name">Marie Dupont</div>
+                                    <div class="athlete-goal">Perte de poids</div>
+                                </div>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: 75%"></div>
+                            </div>
+                            <div class="progress-value">75%</div>
+                        </div>
+                        <div class="progress-item">
+                            <div class="progress-athlete">
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Pierre" alt="Pierre">
+                                <div>
+                                    <div class="athlete-name">Pierre Martin</div>
+                                    <div class="athlete-goal">Prise de masse</div>
+                                </div>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: 60%"></div>
+                            </div>
+                            <div class="progress-value">60%</div>
+                        </div>
+                        <div class="progress-item">
+                            <div class="progress-athlete">
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sophie" alt="Sophie">
+                                <div>
+                                    <div class="athlete-name">Sophie Bernard</div>
+                                    <div class="athlete-goal">Endurance</div>
+                                </div>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: 90%"></div>
+                            </div>
+                            <div class="progress-value">90%</div>
+                        </div>
+                        <div class="progress-item">
+                            <div class="progress-athlete">
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Jean" alt="Jean">
+                                <div>
+                                    <div class="athlete-name">Jean Durand</div>
+                                    <div class="athlete-goal">Force maximale</div>
+                                </div>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: 45%"></div>
+                            </div>
+                            <div class="progress-value">45%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="card activity-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Activité récente</h3>
+                    </div>
+                    <div class="activity-list">
+                        <div class="activity-item">
+                            <div class="activity-icon completed">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-text">Séance terminée</div>
+                                <div class="activity-athlete">Marie Dupont</div>
+                            </div>
+                            <div class="activity-time">Il y a 5 min</div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon new">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"/>
+                                    <line x1="5" y1="12" x2="19" y2="12"/>
+                                </svg>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-text">Nouvel objectif défini</div>
+                                <div class="activity-athlete">Pierre Martin</div>
+                            </div>
+                            <div class="activity-time">Il y a 23 min</div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon message">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                </svg>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-text">Message envoyé</div>
+                                <div class="activity-athlete">Sophie Bernard</div>
+                            </div>
+                            <div class="activity-time">Il y a 1h</div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon scheduled">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                    <line x1="16" y1="2" x2="16" y2="6"/>
+                                    <line x1="8" y1="2" x2="8" y2="6"/>
+                                    <line x1="3" y1="10" x2="21" y2="10"/>
+                                </svg>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-text">Séance planifiée</div>
+                                <div class="activity-athlete">Jean Durand</div>
+                            </div>
+                            <div class="activity-time">Il y a 2h</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="design-system.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

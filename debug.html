@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Coach Michel - Debug</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --ink:#e7ebf0; --mut:#8b95a5;
+    --line:#252a33; --accent:#fc5200; --accent2:#3aa0ff; --good:#34d399;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,sans-serif;padding:20px}
+  .card{background:var(--panel);padding:20px;border-radius:12px;margin-bottom:20px}
+  h2{margin-bottom:15px}
+</style>
+</head>
+<body>
+<div class="card">
+  <h2>Debug Coach Michel</h2>
+  <div id="status">Chargement...</div>
+</div>
+
+<div class="card">
+  <h2>Volume hebdomadaire 2026</h2>
+  <svg id="weekly-chart" viewBox="0 0 820 230" style="background:#1a1d25;border-radius:8px"></svg>
+</div>
+
+<script>
+const weeks=[{s:1,km:11.2,dplus:70},{s:2,km:43.4,dplus:633},{s:3,km:41.6,dplus:1040},{s:4,km:31.7,dplus:324},{s:5,km:21.3,dplus:116},{s:6,km:33,dplus:603},{s:7,km:43.3,dplus:928},{s:8,km:28.2,dplus:668},{s:9,km:47.1,dplus:2293},{s:10,km:45.1,dplus:1676},{s:11,km:9.3,dplus:93},{s:12,km:17.3,dplus:156},{s:15,km:12.9,dplus:651},{s:19,km:12.7,dplus:592},{s:24,km:6.7,dplus:72}];
+
+function drawWeeklyChart(){
+  const w=820,h=230,L=34,R=40,T=14,B=28,iw=w-L-R,ih=h-T-B;
+  const wk=weeks,n=wk.length,gap=iw/n,bw=gap*0.5;
+  const kmMax=70,dMax=3600;
+  let s=`<line x1="${L}" y1="${T+ih}" x2="${w-R}" y2="${T+ih}" stroke="#252a33"/>`;
+  [0,20,40,60].forEach(g=>{const y=T+ih-g/kmMax*ih;
+    s+=`<line x1="${L}" y1="${y}" x2="${w-R}" y2="${y}" stroke="#252a33" stroke-dasharray="2 4"/>`;
+    s+=`<text x="${L-6}" y="${y+3}" text-anchor="end" fill="#8b95a5" font-size="11">${g}</text>`;});
+  wk.forEach((d,i)=>{const x=L+gap*i+(gap-bw)/2,bh=d.km/kmMax*ih,y=T+ih-bh;
+    s+=`<rect x="${x}" y="${y}" width="${bw}" height="${bh}" rx="2.5" fill="#fc5200"/>`;
+    s+=`<text x="${x+bw/2}" y="${T+ih+15}" text-anchor="middle" fill="#8b95a5" font-size="11">S${d.s}</text>`;});
+  let pts=wk.map((d,i)=>{const x=L+gap*i+gap/2,y=T+ih-d.dplus/dMax*ih;return [x,y];});
+  s+=`<polyline fill="none" stroke="#3aa0ff" stroke-width="2" points="${pts.map(p=>p.join(',')).join(' ')}"/>`;
+  pts.forEach(p=>s+=`<circle cx="${p[0]}" cy="${p[1]}" r="2.6" fill="#3aa0ff"/>`);
+  document.getElementById('weekly-chart').innerHTML=s;
+  document.getElementById('status').textContent='Graphique généré avec succès !';
+}
+
+document.addEventListener('DOMContentLoaded', drawWeeklyChart);
+</script>
+</body>
+</html>

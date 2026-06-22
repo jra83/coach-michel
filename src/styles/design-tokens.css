@@ -1,0 +1,223 @@
+/**
+ * DESIGN TOKENS - Couleurs Coach Michel
+ *
+ * Palette de couleurs en variables CSS.
+ * Pour changer la palette entière, modifiez simplement ces variables.
+ *
+ * Conventions de nommage :
+ * - color-{category}-{shade}
+ * - shade: 50 (le plus clair) → 900 (le plus foncé)
+ */
+
+/* ===== COULEURS PRIMAIRES ===== */
+/* Couleur principale de l'application (bleu) */
+:root {
+  --color-primary-50: #e6f2ff;
+  --color-primary-100: #cce4ff;
+  --color-primary-200: #99c9ff;
+  --color-primary-300: #66adff;
+  --color-primary-400: #3392ff;
+  --color-primary-500: #007bff;  /* Couleur principale par défaut */
+  --color-primary-600: #0069d9;
+  --color-primary-700: #0056b3;
+  --color-primary-800: #004494;
+  --color-primary-900: #003275;
+
+  /* Alias pour faciliter l'utilisation */
+  --color-primary: var(--color-primary-500);
+  --color-primary-hover: var(--color-primary-600);
+  --color-primary-active: var(--color-primary-700);
+  --color-primary-light: var(--color-primary-100);
+  --color-primary-lighter: var(--color-primary-50);
+}
+
+/* ===== COULEURS SECONDAIRES ===== */
+/* Couleur secondaire (vert pour succès) */
+:root {
+  --color-secondary-50: #e6fffa;
+  --color-secondary-100: #ccfffa;
+  --color-secondary-200: #99fff0;
+  --color-secondary-300: #66ffec;
+  --color-secondary-400: #33ffe6;
+  --color-secondary-500: #00ffde;
+  --color-secondary-600: #00e6c7;
+  --color-secondary-700: #00b8a6;
+  --color-secondary-800: #008c87;
+  --color-secondary-900: #006069;
+
+  --color-secondary: var(--color-secondary-500);
+  --color-secondary-hover: var(--color-secondary-600);
+  --color-secondary-active: var(--color-secondary-700);
+}
+
+/* ===== COULEURS D'ACCENT ===== */
+/* Couleur d'accent (orange pour alertes) */
+:root {
+  --color-accent-50: #fff7ed;
+  --color-accent-100: #ffedd5;
+  --color-accent-200: #fed7aa;
+  --color-accent-300: #fdba74;
+  --color-accent-400: #fb923c;
+  --color-accent-500: #f97316;  /* Orange par défaut */
+  --color-accent-600: #ea580c;
+  --color-accent-700: #c2410c;
+  --color-accent-800: #9a3412;
+  --color-accent-900: #7c2d12;
+
+  --color-accent: var(--color-accent-500);
+  --color-accent-hover: var(--color-accent-600);
+  --color-accent-active: var(--color-accent-700);
+}
+
+/* ===== COULEURS NEUTRES (GRIS) ===== */
+/* Échelle de gris pour backgrounds, textes, borders */
+:root {
+  --color-gray-50: #f8f9fa;
+  --color-gray-100: #e9ecef;
+  --color-gray-200: #dee2e6;
+  --color-gray-300: #ced4da;
+  --color-gray-400: #adb5bd;
+  --color-gray-500: #6c757d;
+  --color-gray-600: #495057;
+  --color-gray-700: #343a40;
+  --color-gray-800: #212529;
+  --color-gray-900: #1a1d20;
+
+  /* Alias pour usage courant */
+  --color-gray-lightest: var(--color-gray-50);
+  --color-gray-lighter: var(--color-gray-100);
+  --color-gray-light: var(--color-gray-300);
+  --color-gray-medium: var(--color-gray-500);
+  --color-gray-dark: var(--color-gray-600);
+  --color-gray-darker: var(--color-gray-800);
+  --color-gray-darkest: var(--color-gray-900);
+}
+
+/* ===== COULEURS SÉMANTIQUES ===== */
+/* Succès, Erreur, Avertissement, Info */
+:root {
+  --color-success: #22c55e;
+  --color-success-hover: #16a34a;
+  --color-success-bg: #dcfce7;
+
+  --color-error: #ef4444;
+  --color-error-hover: #dc2626;
+  --color-error-bg: #fee2e2;
+
+  --color-warning: #f59e0b;
+  --color-warning-hover: #d97706;
+  --color-warning-bg: #fef3c7;
+
+  --color-info: #3b82f6;
+  --color-info-hover: #2563eb;
+  --color-info-bg: #dbeafe;
+}
+
+/* ===== COULEURS D'ARRIÈRE-PLAN ===== */
+:root {
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: var(--color-gray-50);
+  --color-bg-tertiary: var(--color-gray-100);
+  --color-bg-overlay: rgba(0, 0, 0, 0.5);
+}
+
+/* ===== COULEURS DE TEXTE ===== */
+:root {
+  --color-text-primary: var(--color-gray-900);
+  --color-text-secondary: var(--color-gray-600);
+  --color-text-tertiary: var(--color-gray-500);
+  --color-text-inverse: #ffffff;
+}
+
+/* ===== COULEURS DE BORDURES ===== */
+:root {
+  --color-border-primary: var(--color-gray-300);
+  --color-border-secondary: var(--color-gray-200);
+  --color-border-focus: var(--color-primary-500);
+}
+
+/* ===== OMNAGES ===== */
+:root {
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== RAYONS DE COIN ===== */
+:root {
+  --radius-sm: 0.25rem;    /* 4px */
+  --radius-md: 0.5rem;     /* 8px */
+  --radius-lg: 0.75rem;    /* 12px */
+  --radius-xl: 1rem;       /* 16px */
+  --radius-2xl: 1.5rem;    /* 24px */
+  --radius-full: 9999px;
+}
+
+/* ===== ESPACEMENT ===== */
+:root {
+  --spacing-xs: 0.25rem;   /* 4px */
+  --spacing-sm: 0.5rem;    /* 8px */
+  --spacing-md: 1rem;      /* 16px */
+  --spacing-lg: 1.5rem;    /* 24px */
+  --spacing-xl: 2rem;      /* 32px */
+  --spacing-2xl: 3rem;     /* 48px */
+}
+
+/* ===== TRANSITIONS ===== */
+:root {
+  --transition-fast: 150ms ease;
+  --transition-normal: 200ms ease;
+  --transition-slow: 300ms ease;
+}
+
+/* ===== TYPOGRAPHIE ===== */
+:root {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Fira Code', 'Courier New', monospace;
+
+  --font-size-xs: 0.75rem;      /* 12px */
+  --font-size-sm: 0.875rem;     /* 14px */
+  --font-size-base: 1rem;       /* 16px */
+  --font-size-lg: 1.125rem;     /* 18px */
+  --font-size-xl: 1.25rem;      /* 20px */
+  --font-size-2xl: 1.5rem;      /* 24px */
+  --font-size-3xl: 1.875rem;    /* 30px */
+  --font-size-4xl: 2.25rem;     /* 36px */
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+}
+
+/* ===== Z-INDEX ===== */
+:root {
+  --z-base: 0;
+  --z-dropdown: 10;
+  --z-sticky: 20;
+  --z-fixed: 30;
+  --z-modal: 50;
+  --z-popover: 60;
+  --z-tooltip: 70;
+}
+
+/* ===== ACCESSIBILITÉ ===== */
+/* Contraste minimal de 4.5:1 requis pour le texte normal */
+:root {
+  --focus-ring: 0 0 0 3px rgba(0, 123, 255, 0.3);
+}
+
+/* ===== DARK MODE PRÉPARATION ===== */
+/* Pour activer le dark mode, décommentez ces variables */
+/*
+:root.dark {
+  --color-bg-primary: #1a1d20;
+  --color-bg-secondary: #212529;
+  --color-bg-tertiary: #2c3034;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #adb5bd;
+  --color-text-tertiary: #6c757d;
+}
+*/
