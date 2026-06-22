@@ -77,6 +77,10 @@
   <!-- DASHBOARD -->
   <div id="dashboard" class="section active">
     <div class="cards">
+      <div class="card"><div class="k">CTL (forme)</div><div class="v"><span id="ctl-val">-</span></div></div>
+      <div class="card"><div class="k">ATL (fatigue)</div><div class="v"><span id="atl-val">-</span></div></div>
+      <div class="card"><div class="k">TSB (fraicheur)</div><div class="v"><span id="tsb-val">-</span></div></div>
+      <div class="card"><div class="k">Limite charge</div><div class="v"><span id="limit-val">-</span></div></div>
       <div class="card">
         <div class="k">Charge actuelle</div>
         <div class="v"><span id="week-load">—</span></div>
@@ -301,7 +305,7 @@ function renderFitness(){
   // TSB (vert)
   let tsbPts=hist.map((d,i)=>{const x=L+gap*i,y=T+ih-d.tsb/max*ih;return [x,y];});
   s+=`<polyline fill="none" stroke="var(--good)" stroke-width="2" points="${tsbPts.map(p=>p.join(',')).join(' ')}"/>`;
-  tsbPts.forEach(p=>s+=`<circle cx="${p[0]}" cy="${p[1]}" r="2" fill="var(--good)"/>`;
+  tsbPts.forEach(p=>s+=`<circle cx="${p[0]}" cy="${p[1]}" r="2" fill="var(--good)"/>`);
   
   // Limite (rouge)
   const limY=T+ih-f.limit/max*ih;
