@@ -181,7 +181,7 @@ async function loadData(){
     document.querySelectorAll('svg').forEach(svg=>svg.innerHTML='<text x="410" y="100" text-anchor="middle" fill="var(--mut)">Chargement...</text>');
     
     // État de forme
-    const fitnessRes=await fetch('/api/fitness');
+    const fitnessRes=await fetch('/api/fitness-projection');
     const fitnessData=await fitnessRes.json();
     D.fitness=fitnessData;
     
@@ -282,44 +282,62 @@ function renderFitness(){
   const rec=f.tsb>=0?'Maintenir':'Réduire';
   document.getElementById('fitness-rec').textContent=rec;
   
-  // Graphique évolution CTL/ATL/TSB sur 12 semaines
+  // Graphique évolution CTL/ATL sur 12 semaines (TSB = CTL - ATL, donc redondant)
   const w=820,h=180,L=40,R=30,T=14,B=24,iw=w-L-R,ih=h-T-B;
-  const max=50;
+  
+  // Échelle dynamique basée sur max(CTL, ATL)
+  const hist=f.history;
+  let maxVal=0;
+  hist.forEach(d=>{
+    if(d.ctl>maxVal)maxVal=d.ctl;
+    if(d.atl>maxVal)maxVal=d.atl;
+  });
+  maxVal=Math.max(60,maxVal*1.2); // min 60, marge 20%
+  
   let s=`<line x1="${L}" y1="${T+ih}" x2="${w-R}" y2="${T+ih}" stroke="var(--line)"/>`;
-  [0,10,20,30,40,50].forEach(g=>{const y=T+ih-g/max*ih;
+  [0,20,40,60].forEach(g=>{const y=T+ih-g/maxVal*ih;
     s+=`<line x1="${L}" y1="${y}" x2="${w-R}" y2="${y}" stroke="var(--line)" stroke-dasharray="2 4"/>`;
     s+=`<text class="axis" x="${L-6}" y="${y+3}" text-anchor="end" fill="var(--mut)">${g}</text>`;});
   
-  const hist=f.history,n=hist.length,gap=iw/(n-1);
+  const n=hist.length,gap=iw/(n-1);
   
-  // CTL (bleu)
-  let ctlPts=hist.map((d,i)=>{const x=L+gap*i,y=T+ih-d.ctl/max*ih;return [x,y];});
-  s+=`<polyline fill="none" stroke="var(--accent2)" stroke-width="2.5" points="${ctlPts.map(p=>p.join(',')).join(' ')}"/>`;
-  ctlPts.forEach(p=>s+=`<circle cx="${p[0]}" cy="${p[1]}" r="2.5" fill="var(--accent2)"/>`);
+  // CTL (bleu) - charge d'entraînement long terme (forme)
+  let ctlPts=hist.map((d,i)=>{const x=L+gap*i,y=T+ih-d.ctl/maxVal*ih;return [x,y];});
+  s+=`<polyline fill="none" stroke="var(--accent2)" stroke-width="3" points="${ctlPts.map(p=>p.join(',')).join(' ')}"/>`;
+  ctlPts.forEach(p=>s+=`<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="var(--accent2)"/>`);
   
-  // ATL (orange)
-  let atlPts=hist.map((d,i)=>{const x=L+gap*i,y=T+ih-d.atl/max*ih;return [x,y];});
-  s+=`<polyline fill="none" stroke="var(--warn)" stroke-width="2.5" points="${atlPts.map(p=>p.join(',')).join(' ')}"/>`;
-  atlPts.forEach(p=>s+=`<circle cx="${p[0]}" cy="${p[1]}" r="2.5" fill="var(--warn)"/>`);
+  // ATL (orange) - charge d'entraînement court terme (fatigue)
+  let atlPts=hist.map((d,i)=>{const x=L+gap*i,y=T+ih-d.atl/maxVal*ih;return [x,y];});
+  s+=`<polyline fill="none" stroke="var(--warn)" stroke-width="3" points="${atlPts.map(p=>p.join(',')).join(' ')}"/>`;
+  atlPts.forEach(p=>s+=`<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="var(--warn)"/>`);
   
-  // TSB (vert)
-  let tsbPts=hist.map((d,i)=>{const x=L+gap*i,y=T+ih-d.tsb/max*ih;return [x,y];});
-  s+=`<polyline fill="none" stroke="var(--good)" stroke-width="2" points="${tsbPts.map(p=>p.join(',')).join(' ')}"/>`;
-  tsbPts.forEach(p=>s+=`<circle cx="${p[0]}" cy="${p[1]}" r="2" fill="var(--good)"/>`);
+  // Projections en pointillés (4 prochaines semaines)
+  const projected = hist.filter(d=>d.is_projection);
+  if(projected.length>0){
+    let projCtlPts=projected.map((d,i)=>{const x=L+gap*(hist.length-projected.length+i),y=T+ih-d.ctl/maxVal*ih;return [x,y];});
+    s+=`<polyline fill="none" stroke="var(--accent2)" stroke-width="2" stroke-dasharray="4 4" points="${projCtlPts.map(p=>p.join(',')).join(' ')}"/>`;
+    projCtlPts.forEach(p=>s+=`<circle cx="${p[0]}" cy="${p[1]}" r="2.5" fill="var(--accent2)" opacity="0.5"/>`);
+    
+    let projAtlPts=projected.map((d,i)=>{const x=L+gap*(hist.length-projected.length+i),y=T+ih-d.atl/maxVal*ih;return [x,y];});
+    s+=`<polyline fill="none" stroke="var(--warn)" stroke-width="2" stroke-dasharray="4 4" points="${projAtlPts.map(p=>p.join(',')).join(' ')}"/>`;
+    projAtlPts.forEach(p=>s+=`<circle cx="${p[0]}" cy="${p[1]}" r="2.5" fill="var(--warn)" opacity="0.5"/>`);
+  }
   
   // Limite (rouge)
-  const limY=T+ih-f.limit/max*ih;
-  s+=`<line x1="${L}" y1="${limY}" x2="${w-R}" y2="${limY}" stroke="var(--err)" stroke-width="1.5" stroke-dasharray="4 4"/>`;
+  const limY=T+ih-f.limit/maxVal*ih;
+  s+=`<line x1="${L}" y1="${limY}" x2="${w-R}" y2="${limY}" stroke="var(--err)" stroke-width="2" stroke-dasharray="4 4"/>`;
   s+=`<text class="axis" x="${w-R+6}" y="${limY+3}" text-anchor="start" fill="var(--err)" font-size="10">Limite</text>`;
   
   // Labels semaines
   hist.forEach((d,i)=>{const x=L+gap*i;
-    s+=`<text class="axis" x="${x}" y="${T+ih+16}" text-anchor="middle" fill="var(--mut)" font-size="10">S${d.week}</text>`;});
+    s+=`<text class="axis" x="${x}" y="${T+ih+16}" text-anchor="middle" fill="var(--mut)" font-size="10">S${d.week}${d.is_projection?' (proj.)':''}</text>`;});
   
   // Légende
-  s+=`<text class="axis" x="${L}" y="${T-4}" fill="var(--accent2)" font-size="11">CTL</text>`;
-  s+=`<text class="axis" x="${L+35}" y="${T-4}" fill="var(--warn)" font-size="11">ATL</text>`;
-  s+=`<text class="axis" x="${L+70}" y="${T-4}" fill="var(--good)" font-size="11">TSB</text>`;
+  s+=`<text class="axis" x="${L}" y="${T-4}" fill="var(--accent2)" font-size="11" font-weight="600">CTL (forme)</text>`;
+  s+=`<text class="axis" x="${L+85}" y="${T-4}" fill="var(--warn)" font-size="11" font-weight="600">ATL (fatigue)</text>`;
+  if(projected.length>0){
+    s+=`<text class="axis" x="${L+170}" y="${T-4}" fill="var(--mut)" font-size="10" opacity="0.8">--- Projection</text>`;
+  }
   
   document.getElementById('fitness-chart').innerHTML=s;
 }
@@ -471,7 +489,7 @@ function renderWorkouts(){
   panel.className='panel';
   panel.innerHTML='<h3>Dernières sorties</h3>';
   const list=document.createElement('div');
-  list.innerHTML=D.workouts.map(w=>`<div class="workout-item">
+  list.innerHTML=D.workouts.map((w,i)=>`<div class="workout-item" onclick="showWorkoutAnalysis(${i})" style="cursor:pointer">
     <div class="workout-date">${w.date}</div>
     <div class="workout-info">
       <div class="name">${w.name}</div>
