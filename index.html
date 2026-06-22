@@ -195,7 +195,7 @@
 
 <script>
 // Données chargées depuis l'API
-const D = {
+window.D = {
   years:[],
   vol:[],
   weeks:[],
@@ -206,6 +206,8 @@ const D = {
   hrDrift:[],
   fitness:{ctl:0,atl:0,tsb:0,limit:55,weekLoad:0,history:[]}
 };
+
+const D = window.D; // Alias local
 
 // Charger les données depuis l'API
 async function loadData(){
