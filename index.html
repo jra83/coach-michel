@@ -475,7 +475,7 @@ function renderWorkouts(){
     <div class="workout-date">${w.date}</div>
     <div class="workout-info">
       <div class="name">${w.name}</div>
-      <div class="meta">${w.dist}km • ${Math.floor(w.time/60)}:${(w.time%60).toString().padStart(2,'0')} • ${w.dplus}D+ • FCavg ${w.fcavg} • FCmax ${w.fcmax}</div>
+      <div class="meta">${(w.dist/1000).toFixed(1)}km • ${Math.floor(w.time/60)}:${(w.time%60).toString().padStart(2,'0')} • ${w.dplus}D+ • FCavg ${w.fcavg} • FCmax ${w.fcmax}</div>
     </div>
   </div>`).join('');
   panel.appendChild(list);
