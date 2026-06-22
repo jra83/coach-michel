@@ -67,8 +67,8 @@
   .zbadge{font-size:11px;font-weight:700;padding:1px 7px;border-radius:8px;color:#0b0e13}
   .done-tag{font-size:11px;color:var(--good);margin-left:4px}
   .dd{font-size:12.5px;color:var(--mut);margin-top:4px;line-height:1.45}
-  .zbar{display:flex;height:24px;border-radius:6px;overflow:hidden;margin:8px 0 2px;gap:1px}
-  .zseg{display:flex;align-items:center;justify-content:center;font-size:9px;color:#0b0e13;font-weight:800;min-width:3px}
+  .zbar{display:flex;height:15px;border-radius:5px;overflow:hidden;margin:7px 0 2px;gap:1px}
+  .zseg{display:flex;align-items:center;justify-content:center;font-size:8px;color:#0b0e13;font-weight:800;min-width:3px}
   .zbar-leg{font-size:10px;color:var(--mut);display:flex;gap:10px;flex-wrap:wrap}
   /* Workouts */
   .wo{display:flex;gap:12px;padding:12px;background:var(--line);border-radius:10px;margin-bottom:8px;cursor:pointer;align-items:center}
@@ -334,7 +334,7 @@ function renderPlan(){
     }).join('');
     return `<div class="wk ${open}" id="wk${wi}"><div class="wk-head ${cur}" onclick="document.getElementById('wk${wi}').classList.toggle('open')">
       <span class="arrow">▸</span><span class="wk-title">${wk.is_current?'Cette sem.':'S'+wk.week_number} <span class="muted" style="font-weight:400">${dr}</span></span>
-      <span class="wk-meta"><span class="chip">${wk.total_km} km</span><span class="chip intens" title="Index intensite 1-5">Int ${wk.intensity}</span></span>
+      <span class="wk-meta"><span class="chip">${wk.total_km} km</span><span class="chip intens" title="Charge = volume x intensite (100 = pic du plan)">⚡ ${wk.load_index}</span></span>
     </div><div class="wk-body">${days}</div></div>`;
   }).join('');
 }
