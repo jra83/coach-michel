@@ -387,9 +387,7 @@ function renderWorkouts(){
   list.innerHTML=D.workouts.map((w,i)=>{
     const mm=Math.floor(w.time/60), ss=String(w.time%60).padStart(2,'0');
     const pace=w.pace?`${Math.floor(w.pace)}:${String(Math.round((w.pace%1)*60)).padStart(2,'0')}/km`:'';
-    const pie=w.hrZones?piePie(w.hrZones,40):'<div style="width:40px;height:40px"></div>';
     return `<div class="wo" onclick="showWorkoutAnalysis(${i})">
-      ${pie}
       <div class="wo-date">${w.date}</div>
       <div class="wo-info"><div class="name">${w.name||'Sortie'} ${w.hasAnalysis?'<span class="done-tag">analyse ✓</span>':''}</div>
         <div class="meta">${w.dist}km · ${mm}:${ss} · ${pace} · FC ${w.fcavg}/${w.fcmax}</div></div>
