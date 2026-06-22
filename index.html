@@ -177,26 +177,26 @@ async function loadData(){
     document.querySelectorAll('svg').forEach(svg=>svg.innerHTML='<text x="410" y="100" text-anchor="middle" fill="var(--mut)">Chargement...</text>');
     
     // État de forme
-    const fitnessRes=await fetch('http://51.210.242.179:5000/api/fitness');
+    const fitnessRes=await fetch('/api/fitness');
     const fitnessData=await fitnessRes.json();
     D.fitness=fitnessData;
     
     // Volume hebdo
-    const weeklyRes=await fetch('http://51.210.242.179:5000/api/weekly-volume');
+    const weeklyRes=await fetch('/api/weekly-volume');
     D.weeks=await weeklyRes.json();
     
     // Volume annuel
-    const yearlyRes=await fetch('http://51.210.242.179:5000/api/yearly-volume');
+    const yearlyRes=await fetch('/api/yearly-volume');
     const yearlyData=await yearlyRes.json();
     D.years=yearlyData.years;
     D.vol=yearlyData.vol;
     
     // Dernières sorties
-    const workoutsRes=await fetch('http://51.210.242.179:5000/api/workouts/recent');
+    const workoutsRes=await fetch('/api/workouts/recent');
     D.workouts=await workoutsRes.json();
     
     // Plan
-    const planRes=await fetch('http://51.210.242.179:5000/api/plan');
+    const planRes=await fetch('/api/plan');
     const planData=await planRes.json();
     D.plan=planData.plan;
     
