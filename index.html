@@ -84,15 +84,23 @@
   #splash{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;
     align-items:center;justify-content:center;gap:18px;z-index:2000;transition:opacity .5s ease}
   #splash.hide{opacity:0;pointer-events:none}
-  #splash img{width:128px;height:128px;border-radius:28px;animation:heartbeat 1.25s infinite ease-in-out}
-  #splash .sp-txt{color:var(--mut);font-size:13px;letter-spacing:.5px;animation:fadepulse 1.25s infinite ease-in-out}
-  @keyframes heartbeat{0%{transform:scale(1)}14%{transform:scale(1.14)}28%{transform:scale(1)}
-    42%{transform:scale(1.14)}70%{transform:scale(1)}100%{transform:scale(1)}}
-  @keyframes fadepulse{0%,100%{opacity:.4}50%{opacity:.9}}
+  #splash img{width:210px;height:auto;animation:hb 4.5s infinite;
+    filter:drop-shadow(0 0 0 rgba(252,82,0,0))}
+  #splash .sp-txt{color:var(--ink);font-size:17px;font-weight:650;letter-spacing:.3px}
+  /* poumpoum....poumpoum..........poumpoum...poumpoum (double-battements, pauses variees) */
+  @keyframes hb{
+    0%{transform:scale(1)}     2%{transform:scale(1.16)}   4%{transform:scale(1)}
+    6%{transform:scale(1.20)}  8%{transform:scale(1)}
+    23%{transform:scale(1)}    25%{transform:scale(1.16)}  27%{transform:scale(1)}
+    29%{transform:scale(1.20)} 31%{transform:scale(1)}
+    66.5%{transform:scale(1)}  68.5%{transform:scale(1.16)} 70.5%{transform:scale(1)}
+    72.5%{transform:scale(1.20)} 74.5%{transform:scale(1)}
+    83%{transform:scale(1)}    85%{transform:scale(1.16)}  87%{transform:scale(1)}
+    89%{transform:scale(1.20)} 91%{transform:scale(1)}     100%{transform:scale(1)}}
 </style>
 </head>
 <body>
-<div id="splash"><img src="/icons/michou-256.png" alt="Coach Michou"><div class="sp-txt">Coach Michou…</div></div>
+<div id="splash"><img src="/icons/michou-stache.png" alt="Coach Michou"><div class="sp-txt">Coach Michou</div></div>
 <div class="wrap">
   <h1>Coach Michel</h1>
   <p class="sub" id="goal-sub">Dashboard d'entrainement</p>
@@ -176,7 +184,9 @@ async function loadData(){
     document.getElementById('fitness-cards').innerHTML='<div class="card"><div class="k">Erreur de chargement</div></div>';}
   finally{hideSplash();}
 }
-function hideSplash(){const s=document.getElementById('splash');if(s)setTimeout(()=>s.classList.add('hide'),400);}
+const SPLASH_T0=Date.now();
+function hideSplash(){const s=document.getElementById('splash');if(!s)return;
+  setTimeout(()=>s.classList.add('hide'),Math.max(0,5000-(Date.now()-SPLASH_T0)));} // min 5s a Coach Michou
 function renderAll(){
   renderFitness(); drawWeekly(); drawYearly(); renderZones(); drawDrift(); drawBody(); renderPlan(); renderWorkouts();
   if(D.plan&&D.plan.target_race){const dt=D.plan.target_race_date?(' — '+D.plan.target_race_date):'';
