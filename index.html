@@ -204,7 +204,7 @@
       <div class="panel" style="background:#1c2128;border-color:var(--accent)">
         <div style="font-weight:700;color:var(--accent);font-size:16px">✓ Polarisation 80/20</div>
         <div style="margin-top:6px">~80% du volume en <b>Z1-Z2</b> (facile), ~20% en <b>Z4-Z5</b> (intense), peu de <b>Z3</b> (zone grise).</div>
-        <div style="margin-top:8px"><b>Pourquoi pour toi :</b> marathon (endurance dominante), 3 séances/sem (chaque séance compte), <b>sujet mollet</b> → éviter la zone grise Z3 (stress musculaire prolongé). CTL/ATL utilisé en complément pour doser la charge.</div>
+        <div style="margin-top:8px" id="pourquoi-toi"></div>
         <div class="muted" style="margin-top:6px">Réf : Seiler (2010), Stöggl &amp; Sperlich (2015), Muñoz (2014).</div>
       </div>
       <h3 style="margin-top:18px">Les 4 approches</h3>
@@ -258,7 +258,7 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 function hideSplash(){const s=document.getElementById('splash');if(!s)return;
   setTimeout(()=>s.classList.add('hide'),Math.max(0,5000-(Date.now()-SPLASH_T0)));} // min 5s
 function renderAll(){
-  renderUserChip(); renderAthlete(); renderFitness(); drawWeekly(); drawYearly(); renderZones(); drawDrift(); drawBody(); renderPlan(); renderWorkouts();
+  renderUserChip(); renderAthlete(); renderFitness(); drawWeekly(); drawYearly(); renderZones(); drawDrift(); drawBody(); renderPlan(); renderWorkouts(); renderMethode();
   if(D.plan&&D.plan.target_race){const dt=D.plan.target_race_date?(' — '+D.plan.target_race_date):'';
     document.getElementById('goal-sub').textContent='Objectif : '+D.plan.target_race+dt;}
 }
@@ -444,6 +444,17 @@ function zbar(steps){
   const legParts=[...new Set(steps.map(s=>s.z))].map(z=>`<span style="color:${ZCOL[z]}">■ ${z}</span>`).join(' ');
   const totMin=steps.reduce((a,s)=>a+s.min,0);
   return `<div class="zbar">${segs}</div><div class="zbar-leg">${legParts} · total ~${totMin} min</div>`;
+}
+function renderMethode(){
+  const el=document.getElementById('pourquoi-toi'); if(!el)return;
+  const a=D.athlete||{}, esc=s=>(s||'').replace(/</g,'&lt;');
+  const race=a.target_race||'objectif endurance';
+  const spw=a.sessions_per_week||3;
+  const weak=(a.weaknesses||'').trim();
+  const bits=[`<b>${esc(race)}</b> (filière endurance dominante)`,`${spw} séances/sem${spw<=3?' (chaque séance compte)':''}`];
+  let tail=' → priorité endurance de base, intensité dosée';
+  if(weak){bits.push(`fragilité <b>${esc(weak)}</b>`); tail=` → on évite la zone grise Z3 (stress prolongé) pour protéger ${esc(weak)}`;}
+  el.innerHTML=`<b>Pourquoi pour toi :</b> ${bits.join(', ')}${tail}. CTL/ATL utilisé en complément pour doser la charge.`;
 }
 function renderPlan(){
   const p=D.plan, root=document.getElementById('plan-weeks'), goalEl=document.getElementById('plan-goal');
