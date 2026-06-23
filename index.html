@@ -20,15 +20,19 @@
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--ink);
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;min-height:100vh;
-    padding:calc(16px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) 16px calc(16px + env(safe-area-inset-left))}
+    padding:calc(16px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) calc(78px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left))}
   .wrap{max-width:900px;margin:0 auto}
   h1{font-size:24px;font-weight:650;margin:0 0 8px;letter-spacing:-.3px}
   h3{font-size:15px;margin-bottom:10px}
   .sub{color:var(--mut);font-size:14px;margin:0 0 20px}
-  .nav{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
-  .nav button{background:var(--panel);color:var(--ink);border:1px solid var(--line);
-    padding:8px 16px;border-radius:20px;font-size:14px;cursor:pointer}
-  .nav button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  /* Barre d'onglets fixe en bas (mobile-first) */
+  .nav{position:fixed;left:0;right:0;bottom:0;z-index:900;display:flex;margin:0;
+    background:var(--panel);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+  .nav button{flex:1;background:none;border:none;color:var(--mut);cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 2px 7px;
+    font-size:11px;font-weight:600;letter-spacing:.2px}
+  .nav button .ico{font-size:20px;line-height:1}
+  .nav button.active{color:var(--accent)}
   .section{display:none}.section.active{display:block}
   .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
   .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;position:relative}
@@ -140,10 +144,10 @@
   <div style="display:flex;align-items:center;gap:10px"><h1>Coach Michou</h1><div class="user-chip" id="user-chip"></div></div>
   <p class="sub" id="goal-sub">Dashboard d'entrainement</p>
   <nav class="nav">
-    <button class="active" data-section="dashboard">Tableau de bord</button>
-    <button data-section="athlete">Athlète</button>
-    <button data-section="plan">Plan</button>
-    <button data-section="methode">Méthode</button>
+    <button class="active" data-section="dashboard"><span class="ico">📊</span>Stats</button>
+    <button data-section="athlete"><span class="ico">🏃</span>Athlète</button>
+    <button data-section="plan"><span class="ico">📅</span>Plan</button>
+    <button data-section="methode"><span class="ico">📖</span>Méthode</button>
   </nav>
 
   <div id="dashboard" class="section active">
@@ -574,7 +578,10 @@ async function sendChatMsg(){
     const res=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:hist})});
     const r=await res.json();
     chatMsgs.pop(); chatMsgs.push({role:'coach',content:r.reply}); renderChatMsgs();
-    if(r.plan_updated){chatMsgs.push({role:'coach',content:'✅ Ton plan est prêt — onglet Plan.'}); renderChatMsgs(); loadData();}
+    if(r.plan_updated){
+      chatMsgs.push({role:'coach',content:'✅ Ton plan est prêt ! Je te montre ça.'}); renderChatMsgs(); loadData();
+      setTimeout(()=>{closeChat(); chatMsgs=[]; const pb=document.querySelector('.nav button[data-section="plan"]'); if(pb)pb.click();}, 1800);
+    }
   }catch(e){chatMsgs.pop(); chatMsgs.push({role:'coach',content:'Coach indisponible, réessaie.'}); renderChatMsgs();}
 }
 async function boot(){
