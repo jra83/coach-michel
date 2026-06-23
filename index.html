@@ -118,6 +118,7 @@
     <button class="active" data-section="dashboard">Tableau de bord</button>
     <button data-section="athlete">Athlète</button>
     <button data-section="plan">Plan</button>
+    <button data-section="methode">Méthode</button>
   </nav>
 
   <div id="dashboard" class="section active">
@@ -166,7 +167,30 @@
   </div>
 
   <div id="plan" class="section">
+    <div class="panel" id="plan-goal"></div>
     <div class="panel"><h3 id="plan-title">Plan</h3><div id="plan-weeks"></div></div>
+  </div>
+
+  <div id="methode" class="section">
+    <div class="panel">
+      <h3>Méthode d'entraînement</h3>
+      <p class="muted">Cadre théorique du plan. Approche retenue pour ton profil :</p>
+      <div class="panel" style="background:#1c2128;border-color:var(--accent)">
+        <div style="font-weight:700;color:var(--accent);font-size:16px">✓ Polarisation 80/20</div>
+        <div style="margin-top:6px">~80% du volume en <b>Z1-Z2</b> (facile), ~20% en <b>Z4-Z5</b> (intense), peu de <b>Z3</b> (zone grise).</div>
+        <div style="margin-top:8px"><b>Pourquoi pour toi :</b> marathon (endurance dominante), 3 séances/sem (chaque séance compte), <b>sujet mollet</b> → éviter la zone grise Z3 (stress musculaire prolongé). CTL/ATL utilisé en complément pour doser la charge.</div>
+        <div class="muted" style="margin-top:6px">Réf : Seiler (2010), Stöggl &amp; Sperlich (2015), Muñoz (2014).</div>
+      </div>
+      <h3 style="margin-top:18px">Les 4 approches</h3>
+      <table>
+        <tr><th>Approche</th><th>Principe</th><th>Pour qui</th></tr>
+        <tr style="color:var(--accent)"><td><b>Polarisation 80/20</b> ✓</td><td>80% facile / 20% intense, peu de Z3</td><td>Marathon, 3-4 séances, sujet blessures</td></tr>
+        <tr><td>Seuil (tempo)</td><td>Volume en Z3-Z4 sous LT2</td><td>10k/semi, expérimentés, + risque surcharge</td></tr>
+        <tr><td>Banister CTL/ATL/TSB</td><td>Dosage de charge (fitness/fatigue/forme)</td><td>Cadre complémentaire à toute méthode</td></tr>
+        <tr><td>Norvégien (double seuil)</td><td>Beaucoup de seuil, doubles séances</td><td>Élites, 5-8 séances/sem — pas pour toi</td></tr>
+      </table>
+      <p class="muted" style="margin-top:10px">Le coach (Michou) sélectionne l'approche selon ton profil. Tu pourras en changer via le chat (à venir).</p>
+    </div>
   </div>
 
 </div>
@@ -299,9 +323,16 @@ function drawBody(){
 function renderAthlete(){
   const a=D.athlete; if(!a)return; const el=document.getElementById('profile-card');
   const wsrc=a.weight_source==='withings'?'<span class="muted">(Withings)</span>':'<span class="muted">(manuel)</span>';
-  const comp=(a.fat_percent!=null)?` · ${a.fat_percent}% gras · ${a.muscle_percent}% muscle`:'';
-  const meta=a.bmr?`<div class="muted" style="margin-top:10px">🔥 Métabolisme : <b style="color:var(--ink)">${a.bmr}</b> kcal/j (repos) · <b style="color:var(--ink)">${a.tdee}</b> kcal/j (avec ${a.sessions_per_week} séances)</div>`
-    :`<div class="muted" style="margin-top:10px">Renseigne âge + taille pour calculer ton métabolisme (BMR/TDEE)</div>`;
+  const comp=(a.fat_percent!=null)?`<div class="muted" style="margin-top:8px">Composition · ${a.fat_percent}% gras · ${a.muscle_percent}% muscle</div>`:'';
+  const wg=a.weight_goal_kg?`<div><span class="muted">Objectif poids</span><br><b>${a.weight_goal_kg} kg</b></div>`:'';
+  const nut=a.bmr?`<div class="panel" style="margin-top:12px;background:#1c2128">
+      <div style="font-weight:600;margin-bottom:8px">🔥 Alimentation</div>
+      <div class="grid-prof">
+        <div><span class="muted">Métab. base</span><br><b>${a.bmr}</b> kcal</div>
+        <div><span class="muted">Jour repos</span><br><b>${a.cal_rest}</b> kcal</div>
+        <div><span class="muted">Jour séance</span><br><b>${a.cal_train}</b> kcal</div>
+      </div>${a.cal_advice?'<div class="muted" style="margin-top:8px">'+a.cal_advice+'</div>':''}</div>`
+    :`<div class="muted" style="margin-top:10px">Renseigne date de naissance + taille pour l'alimentation (BMR/TDEE)</div>`;
   el.innerHTML=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
       <h3 style="margin:0">👤 ${a.first_name||a.name}</h3>
       <button class="btn ghost" style="margin-left:auto" onclick="editAthlete()">Éditer</button></div>
@@ -312,31 +343,29 @@ function renderAthlete(){
       <div><span class="muted">FC repos</span><br><b>${a.fc_rest} bpm</b></div>
       <div><span class="muted">FC max</span><br><b>${a.fc_max} bpm</b></div>
       <div><span class="muted">Séances/sem</span><br><b>${a.sessions_per_week}</b></div>
-      <div><span class="muted">Objectif</span><br><b>${a.target_race||'—'}</b></div>
-      <div><span class="muted">Date</span><br><b>${a.target_race_date||'—'}</b></div>
-    </div>${comp?'<div class="muted" style="margin-top:8px">Composition'+comp+'</div>':''}${meta}`;
+      ${wg}
+    </div>${comp}${nut}`;
 }
 function editAthlete(){
   const a=D.athlete,el=document.getElementById('profile-card');
   const f=(lab,k,v,attr='')=>`<label class="fld"><span>${lab}</span><input id="pf-${k}" value="${v==null?'':v}" ${attr}></label>`;
   el.innerHTML=`<h3 style="margin-bottom:12px">Éditer le profil</h3><div class="grid-prof">
       ${f('Prénom','first_name',a.first_name)}
-      ${f('Âge','age',a.age,'type="number"')}
+      ${f('Date de naissance','birth_date',a.birth_date,'type="date"')}
       ${f('Taille (cm)','height_cm',a.height_cm,'type="number"')}
       ${f('Poids manuel (kg)','weight',a.weight_manual,'type="number" step="0.1"')}
       ${f('FC repos (bpm)','fc_rest',a.fc_rest,'type="number"')}
       ${f('FC max (bpm)','fc_max',a.fc_max,'type="number"')}
       ${f('Séances/sem','sessions_per_week',a.sessions_per_week,'type="number"')}
-      ${f('Objectif','target_race',a.target_race)}
-      ${f('Date objectif','target_race_date',a.target_race_date,'type="date"')}</div>
-    <div class="muted" style="margin:10px 0">Le <b>poids manuel</b> est utilisé s'il n'y a pas de Withings. La <b>FC repos</b> = ta valeur de nuit si pas de montre connectée.</div>
+      ${f('Objectif poids (kg)','weight_goal_kg',a.weight_goal_kg,'type="number" step="0.1"')}</div>
+    <div class="muted" style="margin:10px 0">Le <b>poids manuel</b> est utilisé s'il n'y a pas de Withings. La <b>FC repos</b> = ta valeur de nuit si pas de montre. L'objectif de course est en haut du Plan.</div>
     <button class="btn primary" onclick="saveAthlete()">Enregistrer</button>
     <button class="btn ghost" style="margin-left:8px" onclick="renderAthlete()">Annuler</button>`;
 }
 async function saveAthlete(){
-  const keys=['first_name','age','height_cm','weight','fc_rest','fc_max','sessions_per_week','target_race','target_race_date'];
+  const keys=['first_name','birth_date','height_cm','weight','fc_rest','fc_max','sessions_per_week','weight_goal_kg'];
   const d={}; keys.forEach(k=>{const e=document.getElementById('pf-'+k); if(e)d[k]=e.value;});
-  ['age','height_cm','weight','fc_rest','fc_max','sessions_per_week'].forEach(k=>{if(d[k]!=='')d[k]=parseFloat(d[k]);});
+  ['height_cm','weight','fc_rest','fc_max','sessions_per_week','weight_goal_kg'].forEach(k=>{if(d[k]!=='')d[k]=parseFloat(d[k]);});
   document.getElementById('profile-card').innerHTML='<div class="muted">Enregistrement…</div>';
   try{await fetch('/api/athlete',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});}catch(e){}
   await loadData();
@@ -379,8 +408,16 @@ function zbar(steps){
   return `<div class="zbar">${segs}</div><div class="zbar-leg">${legParts} · total ~${totMin} min</div>`;
 }
 function renderPlan(){
-  const p=D.plan, root=document.getElementById('plan-weeks');
-  document.getElementById('plan-title').textContent=(p&&p.plan_name)||'Plan';
+  const p=D.plan, root=document.getElementById('plan-weeks'), goalEl=document.getElementById('plan-goal');
+  document.getElementById('plan-title').textContent='Semaines';
+  if(p&&p.target_race){
+    let cd='';
+    if(p.target_race_date){const dr=Math.ceil((new Date(p.target_race_date)-new Date())/864e5);
+      if(dr>0)cd=` · J-${dr} (${Math.ceil(dr/7)} sem)`;}
+    goalEl.style.display=''; goalEl.innerHTML=`<div style="display:flex;align-items:center;gap:14px">
+      <div style="font-size:26px">🎯</div><div><div style="font-weight:700;font-size:17px">${p.target_race}</div>
+      <div class="muted">${p.target_race_date||''}${cd}</div></div></div>`;
+  } else if(goalEl){goalEl.style.display='none';}
   if(!p||!p.weeks||!p.weeks.length){root.innerHTML='<p class="muted">Aucun plan.</p>';return;}
   root.innerHTML=p.weeks.map((wk,wi)=>{
     const open=wk.is_current?'open':'',cur=wk.is_current?'cur':'';
@@ -392,7 +429,8 @@ function renderPlan(){
       const done=d.done?'<span class="done-tag">✓ fait</span>':'';
       return `<div class="${cls}"><div class="day-head"><div class="dl">${d.dow}</div><div class="dn">${d.name} ${zb} ${done}</div></div>
         ${zbar(d.steps)}
-        <div class="dd">${d.detail||''}${d.pace?' · allure cible '+d.pace:''}</div></div>`;
+        <div class="dd">${d.detail||''}${d.pace?' · allure cible '+d.pace:''}</div>
+        ${d.nutrition?'<div class="dd" style="color:var(--warn)">🥤 '+d.nutrition+'</div>':''}</div>`;
     }).join('');
     return `<div class="wk ${open}" id="wk${wi}"><div class="wk-head ${cur}" onclick="document.getElementById('wk${wi}').classList.toggle('open')">
       <span class="arrow">▸</span><span class="wk-title">${wk.is_current?'Cette sem.':'S'+wk.week_number} <span class="muted" style="font-weight:400">${dr}</span></span>
