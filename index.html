@@ -485,7 +485,7 @@ function renderPlan(){
     }).join('');
     return `<div class="wk ${open}" id="wk${wi}"><div class="wk-head ${cur}" onclick="document.getElementById('wk${wi}').classList.toggle('open')">
       <span class="arrow">▸</span><span class="wk-title">${wk.is_current?'Cette sem.':'S'+wk.week_number} <span class="muted" style="font-weight:400">${dr}</span></span>
-      <span class="wk-meta">${wk.due>0?`<span class="chip" title="Séances réalisées / prévues" style="background:${adhCol(wk.adherence)};color:#06120c">✓ ${wk.done_due}/${wk.due}</span>`:''}<span class="chip">${wk.total_km} km</span><span class="chip intens" title="Charge = volume x intensite (100 = pic du plan)">⚡ ${wk.load_index}</span></span>
+      <span class="wk-meta">${(wk.planned>0&&(wk.due>0||wk.is_current))?`<span class="chip" title="Séances réalisées / prévues dans la semaine" style="background:${adhCol(wk.adherence==null?100:wk.adherence)};color:#06120c">✓ ${wk.done_count}/${wk.planned}</span>`:''}<span class="chip">${wk.total_km} km</span><span class="chip intens" title="Charge = volume x intensite (100 = pic du plan)">⚡ ${wk.load_index}</span></span>
     </div><div class="wk-body">${days}</div></div>`;
   }).join('');
 }
