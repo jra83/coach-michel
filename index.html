@@ -84,6 +84,12 @@
   .modal-close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--ink);font-size:26px;cursor:pointer}
   .ana{white-space:pre-wrap;line-height:1.55;font-size:14px;margin-top:10px}
   .muted{color:var(--mut);font-size:13px}
+  .grid-prof{display:grid;grid-template-columns:repeat(auto-fit,minmax(108px,1fr));gap:14px;font-size:14px}
+  .grid-prof>div{line-height:1.5}
+  .fld{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--mut)}
+  .fld input{background:#0f1115;border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:8px 9px;font-size:14px}
+  .btn{cursor:pointer;border:none;border-radius:10px;padding:8px 16px;font-size:14px;font-weight:600}
+  .btn.primary{background:var(--accent);color:#fff}.btn.ghost{background:var(--line);color:var(--ink)}
   /* Splash heartbeat au chargement */
   #splash{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;
     align-items:center;justify-content:center;gap:18px;z-index:2000;transition:opacity .5s ease}
@@ -110,9 +116,8 @@
   <p class="sub" id="goal-sub">Dashboard d'entrainement</p>
   <nav class="nav">
     <button class="active" data-section="dashboard">Tableau de bord</button>
-    <button data-section="metrics">Metriques</button>
+    <button data-section="athlete">Athlète</button>
     <button data-section="plan">Plan</button>
-    <button data-section="data">Corps</button>
   </nav>
 
   <div id="dashboard" class="section active">
@@ -133,7 +138,8 @@
     </div>
   </div>
 
-  <div id="metrics" class="section">
+  <div id="athlete" class="section">
+    <div class="panel" id="profile-card"></div>
     <div class="panel">
       <h3>Zones cardiaques <span class="muted" style="font-weight:400">(Karvonen)</span></h3>
       <div id="zones-table"></div>
@@ -149,6 +155,11 @@
       <div class="hint">Decouplage FC/allure 2e vs 1re moitie. Sous la barre 0 = tu finis plus efficient (frequent en trail descendant).</div>
     </div>
     <div class="panel">
+      <h3>Poids & composition <span class="muted" style="font-weight:400">(Withings)</span></h3>
+      <div class="legend"><span style="color:var(--accent)">● poids kg</span> <span style="color:var(--accent2)">● masse grasse %</span></div>
+      <div class="chart-row"><svg class="yaxis" id="body-chart-y"></svg><div class="scrollx"><svg id="body-chart"></svg></div></div>
+    </div>
+    <div class="panel">
       <h3>Volume annuel</h3>
       <div class="chart-row"><svg class="yaxis" id="yearly-chart-y"></svg><div class="scrollx"><svg id="yearly-chart"></svg></div></div>
     </div>
@@ -158,13 +169,6 @@
     <div class="panel"><h3 id="plan-title">Plan</h3><div id="plan-weeks"></div></div>
   </div>
 
-  <div id="data" class="section">
-    <div class="panel">
-      <h3>Poids & composition <span class="muted" style="font-weight:400">(Withings)</span></h3>
-      <div class="legend"><span style="color:var(--accent)">● poids kg</span> <span style="color:var(--accent2)">● masse grasse %</span></div>
-      <div class="chart-row"><svg class="yaxis" id="body-chart-y"></svg><div class="scrollx"><svg id="body-chart"></svg></div></div>
-    </div>
-  </div>
 </div>
 
 <div id="modal" class="modal"><div class="modal-content">
@@ -178,11 +182,11 @@ async function jget(u){const r=await fetch(u); if(!r.ok) throw new Error(u+' '+r
 
 async function loadData(){
   try{
-    const [zones,fit,weekly,yearly,wo,plan,body,drift] = await Promise.all([
+    const [zones,fit,weekly,yearly,wo,plan,body,drift,athlete] = await Promise.all([
       jget('/api/zones'),jget('/api/fitness-projection'),jget('/api/weekly-volume'),jget('/api/yearly-volume'),
-      jget('/api/workouts/recent'),jget('/api/plan'),jget('/api/body'),jget('/api/hr-drift')]);
+      jget('/api/workouts/recent'),jget('/api/plan'),jget('/api/body'),jget('/api/hr-drift'),jget('/api/athlete')]);
     D.zones=zones.zones||[]; D.fitness=fit; D.weeks=weekly||[]; D.years=yearly.years||[]; D.vol=yearly.vol||[];
-    D.workouts=wo||[]; D.plan=plan; D.body=body||[]; D.drift=drift;
+    D.workouts=wo||[]; D.plan=plan; D.body=body||[]; D.drift=drift; D.athlete=athlete;
     renderAll();
   }catch(e){console.error('Erreur chargement',e);
     document.getElementById('fitness-cards').innerHTML='<div class="card"><div class="k">Erreur de chargement</div></div>';}
@@ -192,7 +196,7 @@ const SPLASH_T0=Date.now();
 function hideSplash(){const s=document.getElementById('splash');if(!s)return;
   setTimeout(()=>s.classList.add('hide'),Math.max(0,5000-(Date.now()-SPLASH_T0)));} // min 5s a Coach Michou
 function renderAll(){
-  renderFitness(); drawWeekly(); drawYearly(); renderZones(); drawDrift(); drawBody(); renderPlan(); renderWorkouts();
+  renderAthlete(); renderFitness(); drawWeekly(); drawYearly(); renderZones(); drawDrift(); drawBody(); renderPlan(); renderWorkouts();
   if(D.plan&&D.plan.target_race){const dt=D.plan.target_race_date?(' — '+D.plan.target_race_date):'';
     document.getElementById('goal-sub').textContent='Objectif : '+D.plan.target_race+dt;}
 }
@@ -290,6 +294,52 @@ function drawBody(){
     [fMin,Math.round((fMin+fMax)/2),fMax].forEach(g=>{const y=T+ih-(g-fMin)/(fMax-fMin)*ih;s+=`<text class="axis" x="${W-R+6}" y="${y+4}" text-anchor="start" fill="var(--accent2)">${g}%</text>`;});}
   bd.forEach((d,i)=>{if(i%Math.ceil(n/8)===0||i===n-1)s+=`<text class="axis" x="${L+gap*i}" y="${T+ih+16}" text-anchor="middle" fill="var(--mut)" font-size="10">${d.date.slice(5)}</text>`;});
   paint('body-chart',W,H,s,ticks,L+gap*(n-1));
+}
+// ---- Athlète (profil editable) ----
+function renderAthlete(){
+  const a=D.athlete; if(!a)return; const el=document.getElementById('profile-card');
+  const wsrc=a.weight_source==='withings'?'<span class="muted">(Withings)</span>':'<span class="muted">(manuel)</span>';
+  const comp=(a.fat_percent!=null)?` · ${a.fat_percent}% gras · ${a.muscle_percent}% muscle`:'';
+  const meta=a.bmr?`<div class="muted" style="margin-top:10px">🔥 Métabolisme : <b style="color:var(--ink)">${a.bmr}</b> kcal/j (repos) · <b style="color:var(--ink)">${a.tdee}</b> kcal/j (avec ${a.sessions_per_week} séances)</div>`
+    :`<div class="muted" style="margin-top:10px">Renseigne âge + taille pour calculer ton métabolisme (BMR/TDEE)</div>`;
+  el.innerHTML=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+      <h3 style="margin:0">👤 ${a.first_name||a.name}</h3>
+      <button class="btn ghost" style="margin-left:auto" onclick="editAthlete()">Éditer</button></div>
+    <div class="grid-prof">
+      <div><span class="muted">Âge</span><br><b>${a.age||'—'}</b></div>
+      <div><span class="muted">Taille</span><br><b>${a.height_cm?a.height_cm+' cm':'—'}</b></div>
+      <div><span class="muted">Poids ${wsrc}</span><br><b>${a.weight} kg</b></div>
+      <div><span class="muted">FC repos</span><br><b>${a.fc_rest} bpm</b></div>
+      <div><span class="muted">FC max</span><br><b>${a.fc_max} bpm</b></div>
+      <div><span class="muted">Séances/sem</span><br><b>${a.sessions_per_week}</b></div>
+      <div><span class="muted">Objectif</span><br><b>${a.target_race||'—'}</b></div>
+      <div><span class="muted">Date</span><br><b>${a.target_race_date||'—'}</b></div>
+    </div>${comp?'<div class="muted" style="margin-top:8px">Composition'+comp+'</div>':''}${meta}`;
+}
+function editAthlete(){
+  const a=D.athlete,el=document.getElementById('profile-card');
+  const f=(lab,k,v,attr='')=>`<label class="fld"><span>${lab}</span><input id="pf-${k}" value="${v==null?'':v}" ${attr}></label>`;
+  el.innerHTML=`<h3 style="margin-bottom:12px">Éditer le profil</h3><div class="grid-prof">
+      ${f('Prénom','first_name',a.first_name)}
+      ${f('Âge','age',a.age,'type="number"')}
+      ${f('Taille (cm)','height_cm',a.height_cm,'type="number"')}
+      ${f('Poids manuel (kg)','weight',a.weight_manual,'type="number" step="0.1"')}
+      ${f('FC repos (bpm)','fc_rest',a.fc_rest,'type="number"')}
+      ${f('FC max (bpm)','fc_max',a.fc_max,'type="number"')}
+      ${f('Séances/sem','sessions_per_week',a.sessions_per_week,'type="number"')}
+      ${f('Objectif','target_race',a.target_race)}
+      ${f('Date objectif','target_race_date',a.target_race_date,'type="date"')}</div>
+    <div class="muted" style="margin:10px 0">Le <b>poids manuel</b> est utilisé s'il n'y a pas de Withings. La <b>FC repos</b> = ta valeur de nuit si pas de montre connectée.</div>
+    <button class="btn primary" onclick="saveAthlete()">Enregistrer</button>
+    <button class="btn ghost" style="margin-left:8px" onclick="renderAthlete()">Annuler</button>`;
+}
+async function saveAthlete(){
+  const keys=['first_name','age','height_cm','weight','fc_rest','fc_max','sessions_per_week','target_race','target_race_date'];
+  const d={}; keys.forEach(k=>{const e=document.getElementById('pf-'+k); if(e)d[k]=e.value;});
+  ['age','height_cm','weight','fc_rest','fc_max','sessions_per_week'].forEach(k=>{if(d[k]!=='')d[k]=parseFloat(d[k]);});
+  document.getElementById('profile-card').innerHTML='<div class="muted">Enregistrement…</div>';
+  try{await fetch('/api/athlete',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});}catch(e){}
+  await loadData();
 }
 // ---- Zones table (avec allure a plat) ----
 function renderZones(){
