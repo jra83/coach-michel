@@ -85,6 +85,14 @@
   .modal-close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--ink);font-size:26px;cursor:pointer}
   .ana{white-space:pre-wrap;line-height:1.55;font-size:14px;margin-top:10px}
   .muted{color:var(--mut);font-size:13px}
+  /* Chat Michou */
+  #chat-msgs{flex:1;overflow-y:auto;margin:8px 0;display:flex;flex-direction:column}
+  .cmsg{padding:9px 13px;border-radius:13px;margin-bottom:8px;max-width:86%;font-size:14px;line-height:1.45;white-space:pre-wrap}
+  .cmsg.user{background:var(--accent);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+  .cmsg.coach{background:var(--line);align-self:flex-start;border-bottom-left-radius:4px}
+  .chat-in-row{display:flex;gap:8px}
+  .chat-in-row input{flex:1;background:#0f1115;border:1px solid var(--line);color:var(--ink);border-radius:20px;padding:11px 15px;font-size:14px}
+  .replan-card{background:#1c2128;border:1px dashed var(--accent);border-radius:12px;padding:14px;margin-bottom:14px;display:flex;align-items:center;gap:12px}
   .grid-prof{display:grid;grid-template-columns:repeat(auto-fit,minmax(108px,1fr));gap:14px;font-size:14px}
   .grid-prof>div{line-height:1.5}
   .fld{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--mut)}
@@ -215,6 +223,16 @@
 
 <div id="modal" class="modal"><div class="modal-content">
   <button class="modal-close" onclick="closeModal()">×</button><div id="modal-body"></div>
+</div></div>
+
+<div id="chat-overlay" class="modal"><div class="modal-content" style="max-width:560px;height:82vh;display:flex;flex-direction:column">
+  <button class="modal-close" onclick="closeChat()">×</button>
+  <h3 style="margin-bottom:0"><img src="/icons/michou-stache.png" style="height:20px;vertical-align:middle"> Coach Michou</h3>
+  <div id="chat-msgs"></div>
+  <div class="chat-in-row">
+    <input id="chat-in" placeholder="Écris à Michou…" onkeydown="if(event.key==='Enter')sendChatMsg()">
+    <button class="btn primary" onclick="sendChatMsg()">→</button>
+  </div>
 </div></div>
 
 <script>
@@ -436,8 +454,13 @@ function renderPlan(){
       <div style="font-size:26px">🎯</div><div><div style="font-weight:700;font-size:17px">${p.target_race}</div>
       <div class="muted">${p.target_race_date||''}${cd}</div></div></div>`;
   } else if(goalEl){goalEl.style.display='none';}
-  if(!p||!p.weeks||!p.weeks.length){root.innerHTML='<p class="muted">Aucun plan.</p>';return;}
-  root.innerHTML=p.weeks.map((wk,wi)=>{
+  const replan=`<div class="replan-card"><div style="font-size:22px">🗣️</div><div style="flex:1"><b>Objectif & plan</b><div class="muted">Parle à Michou pour (re)définir ton objectif et régénérer ton plan.</div></div><button class="btn primary" onclick="openChat()">Parler à Michou</button></div>`;
+  if(!p||!p.weeks||!p.weeks.length){
+    root.innerHTML=replan+'<p class="muted">Pas encore de plan — dis ton objectif à Michou ☝️</p>';
+    if(!window._chatAuto){window._chatAuto=true;setTimeout(openChat,600);}
+    return;
+  }
+  root.innerHTML=replan+p.weeks.map((wk,wi)=>{
     const open=wk.is_current?'open':'',cur=wk.is_current?'cur':'';
     const dr=`${wk.date_start.slice(5)} → ${wk.date_end.slice(5)}`;
     const days=wk.days.map(d=>{
@@ -493,6 +516,34 @@ async function showWorkout(i){
 }
 function openModalHtml(html){document.getElementById('modal-body').innerHTML=html;document.getElementById('modal').classList.add('open');}
 function closeModal(){document.getElementById('modal').classList.remove('open');}
+// ---- Chat Michou (onboarding / re-plan) ----
+let chatMsgs=[];
+function openChat(){
+  document.getElementById('chat-overlay').classList.add('open');
+  if(!chatMsgs.length){
+    const nm=(D.athlete&&D.athlete.first_name)||'coureur';
+    chatMsgs=[{role:'coach',content:`Salut ${nm}. C'est quoi ton prochain objectif ? Une course avec sa date, ou juste progresser ?`}];
+  }
+  renderChatMsgs(); setTimeout(()=>{const i=document.getElementById('chat-in');if(i)i.focus();},100);
+}
+function closeChat(){document.getElementById('chat-overlay').classList.remove('open');}
+function renderChatMsgs(){
+  const box=document.getElementById('chat-msgs');
+  box.innerHTML=chatMsgs.map(m=>`<div class="cmsg ${m.role==='user'?'user':'coach'}">${(m.content||'').replace(/</g,'&lt;')}</div>`).join('');
+  box.scrollTop=box.scrollHeight;
+}
+async function sendChatMsg(){
+  const inp=document.getElementById('chat-in'),t=inp.value.trim(); if(!t)return;
+  chatMsgs.push({role:'user',content:t}); inp.value='';
+  chatMsgs.push({role:'coach',content:'…'}); renderChatMsgs();
+  const hist=chatMsgs.filter(m=>m.content!=='…').map(m=>({role:m.role==='user'?'user':'assistant',content:m.content}));
+  try{
+    const res=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:hist})});
+    const r=await res.json();
+    chatMsgs.pop(); chatMsgs.push({role:'coach',content:r.reply}); renderChatMsgs();
+    if(r.plan_updated){chatMsgs.push({role:'coach',content:'✅ Ton plan est prêt — onglet Plan.'}); renderChatMsgs(); loadData();}
+  }catch(e){chatMsgs.pop(); chatMsgs.push({role:'coach',content:'Coach indisponible, réessaie.'}); renderChatMsgs();}
+}
 async function boot(){
   let me={logged_in:false};
   try{me=await jget('/api/auth/me');}catch(e){}
