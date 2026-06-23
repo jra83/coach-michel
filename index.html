@@ -117,14 +117,14 @@
   .user-chip a{color:var(--mut);text-decoration:underline;cursor:pointer}
   /* Haut de page : wordmark centre, flanque des 2 BOUTS d'une grosse moustache (le milieu est "derriere" le texte) */
   .topbar{position:relative;display:flex;align-items:center;justify-content:center;padding:2px 2px 0;margin-bottom:16px}
-  .brand-wrap{display:inline-flex;align-items:center;position:relative}
-  .brand{font-family:'Bebas Neue',sans-serif;font-size:34px;line-height:1;letter-spacing:1.5px;position:relative;z-index:2;
+  .brand-wrap{display:inline-flex;align-items:center;gap:7px}
+  .brand{font-family:'Bebas Neue',sans-serif;font-size:34px;line-height:1;letter-spacing:1.5px;
     background:linear-gradient(95deg,#ffae3c 0%,#fc5200 70%);-webkit-background-clip:text;background-clip:text;
     -webkit-text-fill-color:transparent;color:transparent}
-  .stache{display:inline-block;height:30px;width:42px;position:relative;z-index:1;
-    background:url(/icons/michou-stache.png) no-repeat;background-size:auto 30px}
-  .stache.l{background-position:left center;margin-right:-12px}   /* bout gauche, glisse derriere le texte */
-  .stache.r{background-position:right center;margin-left:-12px}    /* bout droit */
+  /* png 512x512 affiche a 120px -> 1 quart = 30px. On ne montre que le 1er et le 4e quart (extremites recourbees) */
+  .stache{display:inline-block;width:30px;height:36px;background:url(/icons/michou-stache.png) no-repeat;background-size:120px 120px}
+  .stache.l{background-position:left center}    /* quart 1, a gauche du C */
+  .stache.r{background-position:right center}    /* quart 4, a droite du U */
   .ava-pastille{width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid var(--accent);flex:none}
   /* Etat vide (graphe non connecte) */
   .empty-state{text-align:center;padding:26px 16px;border:1px dashed var(--line);border-radius:12px}
