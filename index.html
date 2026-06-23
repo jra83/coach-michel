@@ -250,11 +250,12 @@ async function loadData(){
     renderAll();
   }catch(e){console.error('Erreur chargement',e);
     document.getElementById('fitness-cards').innerHTML='<div class="card"><div class="k">Erreur de chargement</div></div>';}
-  finally{hideSplash();}
 }
 const SPLASH_T0=Date.now();
+function setStep(t){const e=document.querySelector('#splash .sp-txt');if(e)e.textContent=t;}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 function hideSplash(){const s=document.getElementById('splash');if(!s)return;
-  setTimeout(()=>s.classList.add('hide'),Math.max(0,5000-(Date.now()-SPLASH_T0)));} // min 5s a Coach Michou
+  setTimeout(()=>s.classList.add('hide'),Math.max(0,5000-(Date.now()-SPLASH_T0)));} // min 5s
 function renderAll(){
   renderUserChip(); renderAthlete(); renderFitness(); drawWeekly(); drawYearly(); renderZones(); drawDrift(); drawBody(); renderPlan(); renderWorkouts();
   if(D.plan&&D.plan.target_race){const dt=D.plan.target_race_date?(' — '+D.plan.target_race_date):'';
@@ -548,8 +549,19 @@ async function boot(){
   let me={logged_in:false};
   try{me=await jget('/api/auth/me');}catch(e){}
   D.me=me;
-  if(me.logged_in){loadData();}
-  else{hideSplash();document.getElementById('login-screen').style.display='flex';}
+  if(!me.logged_in){hideSplash();document.getElementById('login-screen').style.display='flex';return;}
+  // Connecte : ecran de chargement a etapes
+  setStep('Chargement des activités…');
+  let st={activities:0,streams_pending:0};
+  try{st=await jget('/api/import/status');}catch(e){}
+  if(!st.activities){try{await fetch('/api/import/start',{method:'POST'});}catch(e){}}
+  setStep('Chargement des activités détaillées…');
+  await loadData();
+  setStep('All good ✅');
+  await sleep(900);
+  setStep('Michou continue en arrière-plan et met à jour tes metrics…');
+  await sleep(1400);
+  hideSplash();
 }
 function renderUserChip(){
   const me=D.me; if(!me||!me.logged_in)return;
