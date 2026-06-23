@@ -19,7 +19,8 @@
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--ink);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:16px;min-height:100vh}
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;min-height:100vh;
+    padding:calc(16px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) 16px calc(16px + env(safe-area-inset-left))}
   .wrap{max-width:900px;margin:0 auto}
   h1{font-size:24px;font-weight:650;margin:0 0 8px;letter-spacing:-.3px}
   h3{font-size:15px;margin-bottom:10px}
@@ -49,7 +50,7 @@
   .hint{font-size:11px;color:var(--mut);margin-top:4px}
   .axis{font-family:monospace;font-size:12px}
   table{width:100%;border-collapse:collapse;font-size:14px}
-  th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line)}
+  th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
   th{color:var(--mut);font-weight:500;font-size:12px}
   .zdot{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:8px;vertical-align:middle}
   /* Plan accordion */
@@ -198,7 +199,8 @@
         <div class="muted" style="margin-top:6px">Réf : Seiler (2010), Stöggl &amp; Sperlich (2015), Muñoz (2014).</div>
       </div>
       <h3 style="margin-top:18px">Les 4 approches</h3>
-      <table>
+      <table style="table-layout:fixed;width:100%;font-size:12.5px">
+        <colgroup><col style="width:26%"><col style="width:39%"><col style="width:35%"></colgroup>
         <tr><th>Approche</th><th>Principe</th><th>Pour qui</th></tr>
         <tr style="color:var(--accent)"><td><b>Polarisation 80/20</b> ✓</td><td>80% facile / 20% intense, peu de Z3</td><td>Marathon, 3-4 séances, sujet blessures</td></tr>
         <tr><td>Seuil (tempo)</td><td>Volume en Z3-Z4 sous LT2</td><td>10k/semi, expérimentés, + risque surcharge</td></tr>
