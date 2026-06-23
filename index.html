@@ -412,8 +412,20 @@ async function saveAthlete(){
   const d={}; keys.forEach(k=>{const e=document.getElementById('pf-'+k); if(e)d[k]=e.value;});
   ['height_cm','weight','fc_rest','fc_max','sessions_per_week','weight_goal_kg'].forEach(k=>{if(d[k]!=='')d[k]=parseFloat(d[k]);});
   document.getElementById('profile-card').innerHTML='<div class="muted">Enregistrement…</div>';
-  try{await fetch('/api/athlete',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});}catch(e){}
+  let j={};
+  try{const res=await fetch('/api/athlete',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});j=await res.json();}catch(e){}
+  if(j.regenerating){
+    document.getElementById('profile-card').innerHTML='<div class="muted">⏳ Recalcul de ton plan…</div>';
+    await waitPlanReady(0);
+  }
   await loadData();
+}
+async function waitPlanReady(tries){
+  if(tries>30)return; // ~45s
+  let st='generating';
+  try{st=(await (await fetch('/api/plan/status')).json()).status;}catch(e){}
+  if(st==='ready'||st==='error'||st===null)return;
+  await sleep(1500); return waitPlanReady(tries+1);
 }
 // ---- Zones table (avec allure a plat) ----
 function renderZones(){
