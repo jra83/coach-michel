@@ -136,8 +136,9 @@
   #splash img{width:210px;height:auto;animation:hb 1.25s ease-in-out infinite;
     filter:drop-shadow(0 0 0 rgba(252,82,0,0));transition:transform .4s ease}
   #splash.hide img{animation:none;transform:scale(1)} /* pose le coeur en douceur, pas de coupe mid-battement */
-  #splash .sp-txt{color:var(--ink);font-size:17px;font-weight:650;letter-spacing:.3px;
-    text-align:center;max-width:300px;line-height:1.4;padding:0 16px;min-height:48px;white-space:pre-line}
+  #splash .sp-txt{font-family:'Bebas Neue',sans-serif;font-size:23px;letter-spacing:.8px;
+    background:linear-gradient(95deg,#ffae3c,#fc5200);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;
+    text-align:center;max-width:320px;line-height:1.25;padding:0 16px;min-height:48px;white-space:pre-line}
   /* lub-dub + repos, cadence reguliere -> boucle infinie indiscernable */
   @keyframes hb{
     0%{transform:scale(1)}
@@ -152,7 +153,7 @@
 <div id="splash"><img src="/icons/michou-stache.png" alt="Coach Michou"><div class="sp-txt">Coach Michou</div></div>
 <div id="login-screen">
   <img src="/icons/michou-stache.png" alt="Coach Michou" style="width:170px">
-  <div style="font-weight:700;font-size:22px;margin:10px 0 4px">Coach Michou</div>
+  <div class="brand" style="font-size:42px;margin:10px 0 4px">Coach Michou</div>
   <div class="muted" style="margin-bottom:26px">Ton coach running IA, basé sur tes données</div>
   <a href="/api/auth/strava/login" class="strava-btn">🟠 Se connecter avec Strava</a>
   <div class="muted" style="margin-top:14px;font-size:12px;max-width:300px">On récupère tes activités Strava pour personnaliser ton coaching.</div>
@@ -669,8 +670,26 @@ async function boot(){
   hideSplash();
 }
 function renderUserChip(){ /* avatar deplace dans la carte Athlete (renderAthlete) */ }
+// Module la hauteur des lettres pour suivre la forme (tiers central) de la moustache : epais au milieu, fin aux bouts
+function styleBrand(){
+  document.querySelectorAll('.brand').forEach(el=>{
+    if(el.dataset.styled)return; el.dataset.styled='1';
+    const chars=[...el.textContent]; el.textContent='';
+    const N=chars.length, c=(N-1)/2;
+    chars.forEach((ch,i)=>{
+      const sp=document.createElement('span'); sp.style.display='inline-block'; sp.style.verticalAlign='middle';
+      sp.style.webkitTextFillColor='transparent'; sp.style.color='transparent';
+      if(ch===' '){sp.style.width='0.26em'; el.appendChild(sp); return;}
+      const x=(i-c)/c, bump=1-x*x;                 // 0 aux bouts -> 1 au centre
+      sp.textContent=ch;
+      sp.style.fontSize=(0.78+0.46*bump).toFixed(3)+'em';   // plus haut au milieu
+      sp.style.transform='translateY('+(-3*bump).toFixed(2)+'px)';
+      el.appendChild(sp);
+    });
+  });
+}
 async function logout(){try{await fetch('/api/auth/logout',{method:'POST'});}catch(e){}location.href='/michou';}
-document.addEventListener('DOMContentLoaded',()=>{initNav();boot();setTimeout(hideSplash,9000);});
+document.addEventListener('DOMContentLoaded',()=>{styleBrand();initNav();boot();setTimeout(hideSplash,9000);});
 </script>
 </body>
 </html>
