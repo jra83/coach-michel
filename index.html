@@ -578,11 +578,24 @@ async function sendChatMsg(){
     const res=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:hist})});
     const r=await res.json();
     chatMsgs.pop(); chatMsgs.push({role:'coach',content:r.reply}); renderChatMsgs();
-    if(r.plan_updated){
-      chatMsgs.push({role:'coach',content:'✅ Ton plan est prêt ! Je te montre ça.'}); renderChatMsgs(); loadData();
-      setTimeout(()=>{closeChat(); chatMsgs=[]; const pb=document.querySelector('.nav button[data-section="plan"]'); if(pb)pb.click();}, 1800);
+    if(r.generating){
+      chatMsgs.push({role:'coach',content:'⏳ Génération de ton plan en cours…'}); renderChatMsgs();
+      pollPlanStatus(0);
     }
   }catch(e){chatMsgs.pop(); chatMsgs.push({role:'coach',content:'Coach indisponible, réessaie.'}); renderChatMsgs();}
+}
+async function pollPlanStatus(tries){
+  if(tries>45){ // ~90s
+    chatMsgs.push({role:'coach',content:'La génération prend plus de temps que prévu — va voir l\'onglet Plan dans un instant.'}); renderChatMsgs(); return;
+  }
+  let st='generating';
+  try{const r=await fetch('/api/plan/status');st=(await r.json()).status;}catch(e){}
+  if(st==='ready'){
+    chatMsgs.push({role:'coach',content:'✅ Ton plan est prêt ! Je te montre ça.'}); renderChatMsgs(); await loadData();
+    setTimeout(()=>{closeChat(); chatMsgs=[]; const pb=document.querySelector('.nav button[data-section="plan"]'); if(pb)pb.click();}, 1500);
+  } else if(st==='error'){
+    chatMsgs.push({role:'coach',content:'❌ Erreur pendant la génération. Réessaie dans un moment.'}); renderChatMsgs();
+  } else { setTimeout(()=>pollPlanStatus(tries+1), 2000); }
 }
 async function boot(){
   let me={logged_in:false};
