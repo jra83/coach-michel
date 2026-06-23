@@ -678,12 +678,15 @@ function styleBrand(){
     const N=chars.length, c=(N-1)/2;
     chars.forEach((ch,i)=>{
       const sp=document.createElement('span'); sp.style.display='inline-block'; sp.style.verticalAlign='middle';
-      sp.style.webkitTextFillColor='transparent'; sp.style.color='transparent';
       if(ch===' '){sp.style.width='0.26em'; el.appendChild(sp); return;}
       const x=(i-c)/c, bump=1-x*x;                 // 0 aux bouts -> 1 au centre
       sp.textContent=ch;
-      sp.style.fontSize=(0.78+0.46*bump).toFixed(3)+'em';   // plus haut au milieu
-      sp.style.transform='translateY('+(-3*bump).toFixed(2)+'px)';
+      sp.style.fontSize=(0.88+0.30*bump).toFixed(3)+'em';   // plus haut au milieu, sans rapetisser
+      sp.style.transform='translateY('+(-2.5*bump).toFixed(2)+'px)';
+      // degrade orange porte par CHAQUE lettre (le clip du parent ne traverse pas les spans)
+      sp.style.backgroundImage='linear-gradient(95deg,#ffae3c,#fc5200)';
+      sp.style.webkitBackgroundClip='text'; sp.style.backgroundClip='text';
+      sp.style.webkitTextFillColor='transparent'; sp.style.color='transparent';
       el.appendChild(sp);
     });
   });
