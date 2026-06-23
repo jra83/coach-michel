@@ -160,7 +160,7 @@
     </div>
     <div class="panel">
       <h3>Volume hebdo</h3>
-      <div class="legend"><span style="color:var(--accent)">● km</span> <span style="color:var(--accent2)">● D+</span></div>
+      <div class="legend"><span style="color:var(--accent)">● km</span> <span style="color:var(--accent2)">● D+</span> <span class="muted">— barres claires = planifié</span></div>
       <div class="chart-row"><svg class="yaxis" id="weekly-chart-y"></svg><div class="scrollx"><svg id="weekly-chart"></svg></div></div>
     </div>
     <div class="panel" id="workouts-panel">
@@ -322,15 +322,19 @@ function renderFitness(){
 function drawWeekly(){
   const wk=D.weeks; if(!wk||!wk.length){return;}
   const n=wk.length,H=250,W=Math.max(820,n*48),L=8,R=42,T=14,B=30,iw=W-L-R,ih=H-T-B;
-  const gap=iw/n,bw=gap*0.55; let kmMax=10,dMax=100; wk.forEach(d=>{kmMax=Math.max(kmMax,d.km);dMax=Math.max(dMax,d.dplus);}); kmMax*=1.2;dMax*=1.2;
+  const gap=iw/n,bw=gap*0.55; let kmMax=10,dMax=100; wk.forEach(d=>{kmMax=Math.max(kmMax,d.km);dMax=Math.max(dMax,d.dplus||0);}); kmMax*=1.2;dMax*=1.2;
   let s=`<line x1="${L}" y1="${T+ih}" x2="${W-R}" y2="${T+ih}" stroke="var(--line)"/>`,ticks=[];
   const step=Math.max(5,Math.ceil(kmMax/4/5)*5);
   for(let g=0;g<=kmMax;g+=step){const y=T+ih-g/kmMax*ih;ticks.push({y,t:g});s+=`<line x1="${L}" y1="${y}" x2="${W-R}" y2="${y}" stroke="var(--line)" stroke-dasharray="2 4"/>`;}
+  let realCount=0;
   wk.forEach((d,i)=>{const x=L+gap*i+(gap-bw)/2,bh=d.km/kmMax*ih,y=T+ih-bh;
-    s+=`<rect x="${x}" y="${y}" width="${bw}" height="${bh}" rx="2.5" fill="var(--accent)"/><text class="axis" x="${x+bw/2}" y="${T+ih+16}" text-anchor="middle" fill="var(--mut)" font-size="11">S${d.s}</text>`;});
-  const pts=wk.map((d,i)=>[L+gap*i+gap/2,T+ih-d.dplus/dMax*ih]);
-  s+=`<polyline fill="none" stroke="var(--accent2)" stroke-width="2" points="${pts.map(p=>p.join(',')).join(' ')}"/>`;
-  paint('weekly-chart',W,H,s,ticks,L+gap*(n-1)+gap/2);
+    if(!d.is_projection)realCount=i+1;
+    s+=`<rect x="${x}" y="${y}" width="${bw}" height="${bh}" rx="2.5" fill="var(--accent)" opacity="${d.is_projection?0.38:1}"/><text class="axis" x="${x+bw/2}" y="${T+ih+16}" text-anchor="middle" fill="var(--mut)" font-size="11">S${d.s}</text>`;});
+  // ligne D+ : uniquement sur les semaines reelles (le plan n'a pas de D+)
+  const real=wk.filter(d=>!d.is_projection);
+  const pts=real.map((d,i)=>[L+gap*i+gap/2,T+ih-(d.dplus||0)/dMax*ih]);
+  if(pts.length>1)s+=`<polyline fill="none" stroke="var(--accent2)" stroke-width="2" points="${pts.map(p=>p.join(',')).join(' ')}"/>`;
+  paint('weekly-chart',W,H,s,ticks,L+gap*Math.max(0,realCount-1)+gap/2);
 }
 // ---- Yearly ----
 function drawYearly(){
