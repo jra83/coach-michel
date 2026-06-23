@@ -113,7 +113,8 @@
     align-items:center;justify-content:center;gap:18px;z-index:2000;transition:opacity .5s ease}
   #splash.hide{opacity:0;pointer-events:none}
   #splash img{width:210px;height:auto;animation:hb 4.5s infinite;
-    filter:drop-shadow(0 0 0 rgba(252,82,0,0))}
+    filter:drop-shadow(0 0 0 rgba(252,82,0,0));transition:transform .4s ease}
+  #splash.hide img{animation:none;transform:scale(1)} /* pose le coeur en douceur, pas de coupe mid-battement */
   #splash .sp-txt{color:var(--ink);font-size:17px;font-weight:650;letter-spacing:.3px;
     text-align:center;max-width:300px;line-height:1.4;padding:0 16px;min-height:48px;white-space:pre-line}
   /* poumpoum....poumpoum..........poumpoum...poumpoum (double-battements, pauses variees) */
