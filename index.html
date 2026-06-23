@@ -114,7 +114,8 @@
   #splash.hide{opacity:0;pointer-events:none}
   #splash img{width:210px;height:auto;animation:hb 4.5s infinite;
     filter:drop-shadow(0 0 0 rgba(252,82,0,0))}
-  #splash .sp-txt{color:var(--ink);font-size:17px;font-weight:650;letter-spacing:.3px}
+  #splash .sp-txt{color:var(--ink);font-size:17px;font-weight:650;letter-spacing:.3px;
+    text-align:center;max-width:300px;line-height:1.4;padding:0 16px;min-height:48px;white-space:pre-line}
   /* poumpoum....poumpoum..........poumpoum...poumpoum (double-battements, pauses variees) */
   @keyframes hb{
     0%{transform:scale(1)}     2%{transform:scale(1.16)}   4%{transform:scale(1)}
@@ -461,7 +462,15 @@ function renderPlan(){
     if(!window._chatAuto){window._chatAuto=true;setTimeout(openChat,600);}
     return;
   }
-  root.innerHTML=replan+p.weeks.map((wk,wi)=>{
+  const adhCol=v=>v>=80?'#39d98a':v>=50?'#e0a93a':'#e36';
+  const a=p.assiduite;
+  const assCard=(a&&a.due>0)?`<div class="card" style="margin-bottom:14px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div><div class="k">Assiduité</div><div class="muted">${a.done}/${a.due} séances prévues réalisées</div></div>
+      <div style="font-size:28px;font-weight:800;color:${adhCol(a.pct)}">${a.pct}%</div></div>
+    <div style="height:8px;background:var(--line);border-radius:4px;margin-top:10px;overflow:hidden"><div style="height:100%;width:${a.pct}%;background:${adhCol(a.pct)}"></div></div>
+  </div>`:'';
+  root.innerHTML=replan+assCard+p.weeks.map((wk,wi)=>{
     const open=wk.is_current?'open':'',cur=wk.is_current?'cur':'';
     const dr=`${wk.date_start.slice(5)} → ${wk.date_end.slice(5)}`;
     const days=wk.days.map(d=>{
@@ -476,7 +485,7 @@ function renderPlan(){
     }).join('');
     return `<div class="wk ${open}" id="wk${wi}"><div class="wk-head ${cur}" onclick="document.getElementById('wk${wi}').classList.toggle('open')">
       <span class="arrow">▸</span><span class="wk-title">${wk.is_current?'Cette sem.':'S'+wk.week_number} <span class="muted" style="font-weight:400">${dr}</span></span>
-      <span class="wk-meta"><span class="chip">${wk.total_km} km</span><span class="chip intens" title="Charge = volume x intensite (100 = pic du plan)">⚡ ${wk.load_index}</span></span>
+      <span class="wk-meta">${wk.due>0?`<span class="chip" title="Séances réalisées / prévues" style="background:${adhCol(wk.adherence)};color:#06120c">✓ ${wk.done_due}/${wk.due}</span>`:''}<span class="chip">${wk.total_km} km</span><span class="chip intens" title="Charge = volume x intensite (100 = pic du plan)">⚡ ${wk.load_index}</span></span>
     </div><div class="wk-body">${days}</div></div>`;
   }).join('');
 }
@@ -550,17 +559,22 @@ async function boot(){
   try{me=await jget('/api/auth/me');}catch(e){}
   D.me=me;
   if(!me.logged_in){hideSplash();document.getElementById('login-screen').style.display='flex';return;}
-  // Connecte : ecran de chargement a etapes
-  setStep('Chargement des activités…');
-  let st={activities:0,streams_pending:0};
+  let st={activities:0};
   try{st=await jget('/api/import/status');}catch(e){}
-  if(!st.activities){try{await fetch('/api/import/start',{method:'POST'});}catch(e){}}
-  setStep('Chargement des activités détaillées…');
-  await loadData();
-  setStep('All good ✅');
-  await sleep(900);
-  setStep('Michou continue en arrière-plan et met à jour tes metrics…');
-  await sleep(1400);
+  if(!st.activities){
+    // VRAI premier chargement : on detaille les etapes
+    setStep('Chargement des activités…');
+    try{await fetch('/api/import/start',{method:'POST'});}catch(e){}
+    setStep('Chargement des activités détaillées…');
+    await loadData();
+    setStep('All good ✅');
+    await sleep(1000);
+    setStep('Michou continue de charger en arrière-plan\net mettra à jour tes metrics.');
+    await sleep(1800);
+  } else {
+    // utilisateur connu : splash court, juste le logo (texte par defaut)
+    await loadData();
+  }
   hideSplash();
 }
 function renderUserChip(){
