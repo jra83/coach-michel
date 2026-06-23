@@ -459,7 +459,20 @@ function renderMethode(){
 function renderPlan(){
   const p=D.plan, root=document.getElementById('plan-weeks'), goalEl=document.getElementById('plan-goal');
   document.getElementById('plan-title').textContent='Semaines';
-  if(p&&p.target_race){
+  const objs=(p&&p.objectives)||[];
+  if(objs.length){
+    goalEl.style.display='';
+    goalEl.innerHTML=`<div style="font-weight:700;font-size:16px;margin-bottom:6px">🎯 Objectif${objs.length>1?'s':''}</div>`+
+      objs.map(o=>{
+        const dr=Math.ceil((new Date(o.race_date)-new Date())/864e5);
+        const cd=dr>0?`J-${dr} · ${Math.ceil(dr/7)} sem`:'passé';
+        const pc=o.priority==='A'?'#fc5200':'#3a7a5a';
+        const ti=o.target_time?` · cible ${o.target_time}`:'';
+        return `<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid var(--line)">
+          <span class="chip" title="${o.priority==='A'?'Objectif principal':'Objectif préparatoire'}" style="background:${pc};color:#fff;font-weight:700">${o.priority}</span>
+          <div style="flex:1"><div style="font-weight:600">${o.label}${ti}</div><div class="muted">${o.race_date} · ${cd}</div></div></div>`;
+      }).join('');
+  } else if(p&&p.target_race){
     let cd='';
     if(p.target_race_date){const dr=Math.ceil((new Date(p.target_race_date)-new Date())/864e5);
       if(dr>0)cd=` · J-${dr} (${Math.ceil(dr/7)} sem)`;}
