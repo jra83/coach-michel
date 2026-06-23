@@ -11,6 +11,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Michou">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#0f1115; --panel:#171a21; --ink:#e7ebf0; --mut:#8b95a5;
@@ -112,14 +115,12 @@
   .user-chip{display:flex;align-items:center;gap:8px;margin-left:auto;font-size:13px;color:var(--mut)}
   .user-chip img{width:26px;height:26px;border-radius:50%}
   .user-chip a{color:var(--mut);text-decoration:underline;cursor:pointer}
-  /* Haut de page : carte profil */
-  .topbar{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:11px 14px;margin-bottom:18px}
-  .topbar-ava{width:46px;height:46px;border-radius:50%;object-fit:cover;border:2px solid var(--accent);flex:none}
-  .topbar-mid{flex:1;min-width:0}
-  .topbar-name{font-weight:700;font-size:17px;line-height:1.2}
-  .topbar-goal{color:var(--mut);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
-  .topbar-logo{height:30px;width:auto;flex:none;opacity:.92}
-  .topbar-logout{background:none;border:none;color:var(--mut);font-size:17px;cursor:pointer;padding:4px;flex:none}
+  /* Haut de page : wordmark + pastille Strava, sans fond */
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:2px 2px 0;margin-bottom:16px}
+  .brand{font-family:'Bebas Neue',sans-serif;font-size:34px;line-height:1;letter-spacing:1.5px;
+    background:linear-gradient(95deg,#ffae3c 0%,#fc5200 70%);-webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;color:transparent}
+  .topbar-ava{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--accent);flex:none;cursor:pointer}
   /* Etat vide (graphe non connecte) */
   .empty-state{text-align:center;padding:26px 16px;border:1px dashed var(--line);border-radius:12px}
   .withings-btn{display:inline-block;background:#00b2a9;color:#fff;border:none;padding:10px 18px;border-radius:22px;font-weight:600;text-decoration:none;cursor:pointer}
@@ -153,13 +154,8 @@
 </div>
 <div class="wrap">
   <div class="topbar">
-    <img class="topbar-ava" id="topbar-ava" alt="" style="display:none">
-    <div class="topbar-mid">
-      <div class="topbar-name" id="topbar-name">Coach Michou</div>
-      <div class="topbar-goal" id="goal-sub">Dashboard d'entraînement</div>
-    </div>
-    <img class="topbar-logo" src="/icons/michou-stache.png" alt="Michou">
-    <button class="topbar-logout" id="topbar-logout" onclick="logout()" title="Déconnexion" style="display:none">⎋</button>
+    <div class="brand">Coach Michou</div>
+    <img class="topbar-ava" id="topbar-ava" alt="Strava" title="Connecté à Strava — clic pour déconnexion" onclick="logout()" style="display:none">
   </div>
   <nav class="nav">
     <button class="active" data-section="dashboard"><span class="ico">📊</span>Stats</button>
@@ -287,8 +283,6 @@ function hideSplash(){const s=document.getElementById('splash');if(!s)return;
   setTimeout(()=>s.classList.add('hide'),Math.max(0,5000-(Date.now()-SPLASH_T0)));} // min 5s
 function renderAll(){
   renderUserChip(); renderAthlete(); renderFitness(); drawWeekly(); drawYearly(); renderZones(); drawDrift(); drawBody(); renderPlan(); renderWorkouts(); renderMethode();
-  if(D.plan&&D.plan.target_race){const dt=D.plan.target_race_date?(' — '+D.plan.target_race_date):'';
-    document.getElementById('goal-sub').textContent='Objectif : '+D.plan.target_race+dt;}
 }
 function initNav(){document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));
@@ -666,8 +660,6 @@ function renderUserChip(){
   const me=D.me; if(!me||!me.logged_in)return;
   const av=document.getElementById('topbar-ava');
   if(me.avatar_url){av.src=me.avatar_url;av.style.display='';}
-  document.getElementById('topbar-name').textContent='Salut, '+(me.first_name||me.name||'coureur');
-  document.getElementById('topbar-logout').style.display='';
 }
 async function logout(){try{await fetch('/api/auth/logout',{method:'POST'});}catch(e){}location.href='/michou';}
 document.addEventListener('DOMContentLoaded',()=>{initNav();boot();setTimeout(hideSplash,9000);});
