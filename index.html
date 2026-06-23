@@ -115,12 +115,16 @@
   .user-chip{display:flex;align-items:center;gap:8px;margin-left:auto;font-size:13px;color:var(--mut)}
   .user-chip img{width:26px;height:26px;border-radius:50%}
   .user-chip a{color:var(--mut);text-decoration:underline;cursor:pointer}
-  /* Haut de page : wordmark + pastille Strava, sans fond */
-  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:2px 2px 0;margin-bottom:16px}
+  /* Haut de page : wordmark centre flanque de moustache, pastille Strava a droite, sans fond */
+  .topbar{position:relative;display:flex;align-items:center;justify-content:center;padding:2px 2px 0;margin-bottom:16px}
+  .brand-wrap{display:inline-flex;align-items:center;gap:8px}
   .brand{font-family:'Bebas Neue',sans-serif;font-size:34px;line-height:1;letter-spacing:1.5px;
     background:linear-gradient(95deg,#ffae3c 0%,#fc5200 70%);-webkit-background-clip:text;background-clip:text;
     -webkit-text-fill-color:transparent;color:transparent}
-  .topbar-ava{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--accent);flex:none;cursor:pointer}
+  .stache{display:inline-block;height:22px;width:22px;background:url(/icons/michou-stache.png) no-repeat;background-size:auto 100%}
+  .stache.l{background-position:0% center}
+  .stache.r{background-position:100% center}
+  .topbar-ava{position:absolute;right:2px;top:50%;transform:translateY(-50%);width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid var(--accent);cursor:pointer}
   /* Etat vide (graphe non connecte) */
   .empty-state{text-align:center;padding:26px 16px;border:1px dashed var(--line);border-radius:12px}
   .withings-btn{display:inline-block;background:#00b2a9;color:#fff;border:none;padding:10px 18px;border-radius:22px;font-weight:600;text-decoration:none;cursor:pointer}
@@ -154,7 +158,11 @@
 </div>
 <div class="wrap">
   <div class="topbar">
-    <div class="brand">Coach Michou</div>
+    <div class="brand-wrap">
+      <span class="stache l"></span>
+      <span class="brand">Coach Michou</span>
+      <span class="stache r"></span>
+    </div>
     <img class="topbar-ava" id="topbar-ava" alt="Strava" title="Connecté à Strava — clic pour déconnexion" onclick="logout()" style="display:none">
   </div>
   <nav class="nav">
