@@ -112,6 +112,17 @@
   .user-chip{display:flex;align-items:center;gap:8px;margin-left:auto;font-size:13px;color:var(--mut)}
   .user-chip img{width:26px;height:26px;border-radius:50%}
   .user-chip a{color:var(--mut);text-decoration:underline;cursor:pointer}
+  /* Haut de page : carte profil */
+  .topbar{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:11px 14px;margin-bottom:18px}
+  .topbar-ava{width:46px;height:46px;border-radius:50%;object-fit:cover;border:2px solid var(--accent);flex:none}
+  .topbar-mid{flex:1;min-width:0}
+  .topbar-name{font-weight:700;font-size:17px;line-height:1.2}
+  .topbar-goal{color:var(--mut);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+  .topbar-logo{height:30px;width:auto;flex:none;opacity:.92}
+  .topbar-logout{background:none;border:none;color:var(--mut);font-size:17px;cursor:pointer;padding:4px;flex:none}
+  /* Etat vide (graphe non connecte) */
+  .empty-state{text-align:center;padding:26px 16px;border:1px dashed var(--line);border-radius:12px}
+  .withings-btn{display:inline-block;background:#00b2a9;color:#fff;border:none;padding:10px 18px;border-radius:22px;font-weight:600;text-decoration:none;cursor:pointer}
   /* Splash heartbeat au chargement */
   #splash{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;
     align-items:center;justify-content:center;gap:18px;z-index:2000;transition:opacity .5s ease}
@@ -141,8 +152,15 @@
   <div class="muted" style="margin-top:14px;font-size:12px;max-width:300px">On récupère tes activités Strava pour personnaliser ton coaching.</div>
 </div>
 <div class="wrap">
-  <div style="display:flex;align-items:center;gap:10px"><h1>Coach Michou</h1><div class="user-chip" id="user-chip"></div></div>
-  <p class="sub" id="goal-sub">Dashboard d'entrainement</p>
+  <div class="topbar">
+    <img class="topbar-ava" id="topbar-ava" alt="" style="display:none">
+    <div class="topbar-mid">
+      <div class="topbar-name" id="topbar-name">Coach Michou</div>
+      <div class="topbar-goal" id="goal-sub">Dashboard d'entraînement</div>
+    </div>
+    <img class="topbar-logo" src="/icons/michou-stache.png" alt="Michou">
+    <button class="topbar-logout" id="topbar-logout" onclick="logout()" title="Déconnexion" style="display:none">⎋</button>
+  </div>
   <nav class="nav">
     <button class="active" data-section="dashboard"><span class="ico">📊</span>Stats</button>
     <button data-section="athlete"><span class="ico">🏃</span>Athlète</button>
@@ -187,8 +205,14 @@
     </div>
     <div class="panel">
       <h3>Poids & composition <span class="muted" style="font-weight:400">(Withings)</span></h3>
-      <div class="legend"><span style="color:var(--accent)">● poids kg</span> <span style="color:var(--accent2)">● masse grasse %</span></div>
-      <div class="chart-row"><svg class="yaxis" id="body-chart-y"></svg><div class="scrollx"><svg id="body-chart"></svg></div></div>
+      <div id="body-empty" class="empty-state" style="display:none">
+        <div class="muted" style="margin-bottom:14px">Connecte ta balance Withings pour suivre poids, masse grasse et composition.</div>
+        <a class="withings-btn" href="/api/withings/connect">⌚ Connecter Withings</a>
+      </div>
+      <div id="body-wrap">
+        <div class="legend"><span style="color:var(--accent)">● poids kg</span> <span style="color:var(--accent2)">● masse grasse %</span></div>
+        <div class="chart-row"><svg class="yaxis" id="body-chart-y"></svg><div class="scrollx"><svg id="body-chart"></svg></div></div>
+      </div>
     </div>
     <div class="panel">
       <h3>Volume annuel</h3>
@@ -349,7 +373,9 @@ function drawYearly(){
 }
 // ---- Body ----
 function drawBody(){
-  const bd=D.body; if(!bd||!bd.length){return;}
+  const bd=D.body; const empty=document.getElementById('body-empty'),wrap=document.getElementById('body-wrap');
+  if(!bd||!bd.length){if(empty)empty.style.display='';if(wrap)wrap.style.display='none';return;}
+  if(empty)empty.style.display='none';if(wrap)wrap.style.display='';
   const n=bd.length,H=230,W=Math.max(820,n*22),L=8,R=44,T=16,B=28,iw=W-L-R,ih=H-T-B;
   const gap=iw/Math.max(1,n-1); let wMin=999,wMax=0; bd.forEach(d=>{wMin=Math.min(wMin,d.weight);wMax=Math.max(wMax,d.weight);});
   wMin=Math.floor(wMin-1);wMax=Math.ceil(wMax+1);
@@ -638,7 +664,10 @@ async function boot(){
 }
 function renderUserChip(){
   const me=D.me; if(!me||!me.logged_in)return;
-  document.getElementById('user-chip').innerHTML=`${me.avatar_url?'<img src="'+me.avatar_url+'">':''}<span>${me.first_name||me.name||''}</span> · <a onclick="logout()">Déconnexion</a>`;
+  const av=document.getElementById('topbar-ava');
+  if(me.avatar_url){av.src=me.avatar_url;av.style.display='';}
+  document.getElementById('topbar-name').textContent='Salut, '+(me.first_name||me.name||'coureur');
+  document.getElementById('topbar-logout').style.display='';
 }
 async function logout(){try{await fetch('/api/auth/logout',{method:'POST'});}catch(e){}location.href='/michou';}
 document.addEventListener('DOMContentLoaded',()=>{initNav();boot();setTimeout(hideSplash,9000);});
