@@ -78,6 +78,9 @@
   .dn{font-weight:600;font-size:14px}
   .zbadge{font-size:11px;font-weight:700;padding:1px 7px;border-radius:8px;color:#0b0e13}
   .done-tag{font-size:11px;color:var(--good);margin-left:4px}
+  .day-move{margin-left:auto;display:inline-flex;gap:3px;flex:none}
+  .day-move button{background:var(--line);border:none;color:var(--ink);border-radius:5px;width:24px;height:22px;font-size:11px;cursor:pointer;padding:0;line-height:1}
+  .day-move button:active{background:var(--accent);color:#fff}
   .dd{font-size:12.5px;color:var(--mut);margin-top:4px;line-height:1.45}
   .zbar{display:flex;height:15px;border-radius:5px;overflow:hidden;margin:7px 0 2px;gap:1px}
   .zseg{display:flex;align-items:center;justify-content:center;font-size:8px;color:#0b0e13;font-weight:800;min-width:3px}
@@ -510,6 +513,11 @@ function renderMethode(){
   if(weak){bits.push(`fragilité <b>${esc(weak)}</b>`); tail=` → on évite la zone grise Z3 (stress prolongé) pour protéger ${esc(weak)}`;}
   el.innerHTML=`<b>Pourquoi pour toi :</b> ${bits.join(', ')}${tail}. CTL/ATL utilisé en complément pour doser la charge.`;
 }
+async function moveSession(id,dir){
+  if(!id)return;
+  try{await fetch('/api/plan/move',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:id,dir:dir})});}catch(e){}
+  await loadData();
+}
 function renderPlan(){
   const p=D.plan, root=document.getElementById('plan-weeks'), goalEl=document.getElementById('plan-goal');
   document.getElementById('plan-title').textContent='Semaines';
@@ -556,7 +564,8 @@ function renderPlan(){
       if(d.type==='rest')return `<div class="${cls}"><div class="day-head"><div class="dl">${d.dow}</div><div class="dn" style="color:var(--mut);font-weight:500">Repos</div></div></div>`;
       const zb=d.zone?`<span class="zbadge" style="background:${ZCOL[d.zone]}">${d.zone} ${d.bpm}</span>`:'';
       const done=d.done?'<span class="done-tag">✓ fait</span>':'';
-      return `<div class="${cls}"><div class="day-head"><div class="dl">${d.dow}</div><div class="dn">${d.name} ${zb} ${done}</div></div>
+      const mv=(d.id&&d.type!=='race'&&d.status!=='past')?`<span class="day-move"><button onclick="moveSession(${d.id},-1)" title="Décaler au jour précédent">◀</button><button onclick="moveSession(${d.id},1)" title="Décaler au jour suivant">▶</button></span>`:'';
+      return `<div class="${cls}"><div class="day-head"><div class="dl">${d.dow}</div><div class="dn">${d.name} ${zb} ${done}</div>${mv}</div>
         ${zbar(d.steps)}
         <div class="dd">${d.detail||''}${d.pace?' · allure cible '+d.pace:''}</div>
         ${d.nutrition?'<div class="dd" style="color:var(--warn)">🥤 '+d.nutrition+'</div>':''}</div>`;
