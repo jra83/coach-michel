@@ -81,6 +81,9 @@
   .day-move{margin-left:auto;display:inline-flex;gap:3px;flex:none}
   .day-move button{background:var(--line);border:none;color:var(--ink);border-radius:5px;width:24px;height:22px;font-size:11px;cursor:pointer;padding:0;line-height:1}
   .day-move button:active{background:var(--accent);color:#fff}
+  .link-list{display:flex;flex-direction:column;gap:6px;max-height:52vh;overflow-y:auto}
+  .link-opt{text-align:left;background:var(--line);border:none;color:var(--ink);padding:10px 12px;border-radius:8px;cursor:pointer;font-size:13px}
+  .link-opt:active{background:var(--accent);color:#fff}
   .dd{font-size:12.5px;color:var(--mut);margin-top:4px;line-height:1.45}
   .zbar{display:flex;height:15px;border-radius:5px;overflow:hidden;margin:7px 0 2px;gap:1px}
   .zseg{display:flex;align-items:center;justify-content:center;font-size:8px;color:#0b0e13;font-weight:800;min-width:3px}
@@ -518,6 +521,18 @@ async function moveSession(id,dir){
   try{await fetch('/api/plan/move',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:id,dir:dir})});}catch(e){}
   await loadData();
 }
+function linkSession(id,date){
+  const tgt=new Date(date).getTime();
+  const acts=(D.workouts||[]).filter(w=>w.activity_id).map(w=>({...w,dd:Math.abs(new Date(w.date).getTime()-tgt)/864e5}))
+    .filter(w=>w.dd<=14).sort((a,b)=>a.dd-b.dd);
+  const opts=acts.map(w=>`<button class="link-opt" onclick="doLink(${id},'${w.activity_id}')">${w.date} · ${w.name||'Sortie'} · ${w.dist} km${w.dplus?' · +'+w.dplus+'m':''}</button>`).join('');
+  openModalHtml(`<h3>Associer une sortie</h3><div class="muted" style="margin:6px 0 10px">Quelle sortie réalisée correspond à cette séance ?</div><div class="link-list">${opts||'<div class="muted">Aucune sortie récente (±14 jours).</div>'}</div>`);
+}
+async function doLink(id,act){
+  closeModal();
+  try{await fetch('/api/plan/associate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:id,activity_id:act})});}catch(e){}
+  await loadData();
+}
 function renderPlan(){
   const p=D.plan, root=document.getElementById('plan-weeks'), goalEl=document.getElementById('plan-goal');
   document.getElementById('plan-title').textContent='Semaines';
@@ -564,7 +579,7 @@ function renderPlan(){
       if(d.type==='rest')return `<div class="${cls}"><div class="day-head"><div class="dl">${d.dow}</div><div class="dn" style="color:var(--mut);font-weight:500">Repos</div></div></div>`;
       const zb=d.zone?`<span class="zbadge" style="background:${ZCOL[d.zone]}">${d.zone} ${d.bpm}</span>`:'';
       const done=d.done?'<span class="done-tag">✓ fait</span>':'';
-      const mv=(d.id&&d.type!=='race'&&d.status!=='past')?`<span class="day-move"><button onclick="moveSession(${d.id},-1)" title="Décaler au jour précédent">◀</button><button onclick="moveSession(${d.id},1)" title="Décaler au jour suivant">▶</button></span>`:'';
+      const mv=(d.id&&d.type!=='race')?`<span class="day-move"><button onclick="moveSession(${d.id},-1)" title="Décaler au jour précédent">◀</button><button onclick="moveSession(${d.id},1)" title="Décaler au jour suivant">▶</button>${d.done?'':`<button onclick="linkSession(${d.id},'${d.date}')" title="Associer une sortie réalisée">🔗</button>`}</span>`:'';
       return `<div class="${cls}"><div class="day-head"><div class="dl">${d.dow}</div><div class="dn">${d.name} ${zb} ${done}</div>${mv}</div>
         ${zbar(d.steps)}
         <div class="dd">${d.detail||''}${d.pace?' · allure cible '+d.pace:''}</div>
