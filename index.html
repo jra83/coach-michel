@@ -357,7 +357,10 @@ function renderFitness(){
     s+=`<polyline fill="none" stroke="${c}" stroke-width="3" points="${pts.slice(0,real).map(p=>p.join(',')).join(' ')}"/>`;
     pts.slice(0,real).forEach(p=>s+=`<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="${c}"/>`);
     if(real<n)s+=`<polyline fill="none" stroke="${c}" stroke-width="2" stroke-dasharray="4 4" opacity=".7" points="${pts.slice(real-1).map(p=>p.join(',')).join(' ')}"/>`;});
-  hist.forEach((d,i)=>{s+=`<text class="axis" x="${X(i)}" y="${T+ih+18}" text-anchor="middle" fill="var(--mut)" font-size="11">S${d.week}${d.is_projection?'*':''}</text>`;});
+  hist.forEach((d,i)=>{
+    if(hist.length>13&&i%2!==0&&i!==hist.length-1)return;   // 1 label sur 2 si beaucoup de semaines
+    const lbl=d.date?(d.date.slice(8,10)+'/'+d.date.slice(5,7)):('S'+d.week);
+    s+=`<text class="axis" x="${X(i)}" y="${T+ih+18}" text-anchor="middle" fill="var(--mut)" font-size="10">${lbl}${d.is_projection?'*':''}</text>`;});
   paint('fitness-chart',W,H,s,ticks,X(Math.max(0,real-1)));
 }
 // ---- Weekly volume ----
