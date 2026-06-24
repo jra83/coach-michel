@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Coach Michou</title>
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#0f1115">
@@ -274,7 +274,9 @@ const D = {zones:[], fitness:null, weeks:[], years:[], vol:[], workouts:[], plan
 const ZCOL = {Z1:'#3aa0ff',Z2:'#34d399',Z3:'#f59e0b',Z4:'#fc5200',Z5:'#ef4444'};
 async function jget(u){const r=await fetch(u); if(!r.ok) throw new Error(u+' '+r.status); return r.json();}
 
+let _lastLoad=0;
 async function loadData(){
+  _lastLoad=Date.now();
   try{
     const [zones,fit,weekly,yearly,wo,plan,body,drift,athlete] = await Promise.all([
       jget('/api/zones'),jget('/api/fitness-projection'),jget('/api/weekly-volume'),jget('/api/yearly-volume'),
@@ -692,6 +694,14 @@ function styleBrand(){
   });
 }
 async function logout(){try{await fetch('/api/auth/logout',{method:'POST'});}catch(e){}location.href='/michou';}
+// rafraichit les donnees quand on revient sur l'app (plus besoin de fermer/rouvrir la PWA)
+function refreshIfStale(){
+  if(document.hidden||!(D.me&&D.me.logged_in))return;
+  if(Date.now()-_lastLoad<3000)return;   // anti-rebond
+  loadData();
+}
+document.addEventListener('visibilitychange',refreshIfStale);
+window.addEventListener('focus',refreshIfStale);
 document.addEventListener('DOMContentLoaded',()=>{styleBrand();initNav();boot();setTimeout(hideSplash,9000);});
 </script>
 </body>
