@@ -78,9 +78,11 @@
   .dn{font-weight:600;font-size:14px}
   .zbadge{font-size:11px;font-weight:700;padding:1px 7px;border-radius:8px;color:#0b0e13}
   .done-tag{font-size:11px;color:var(--good);margin-left:4px}
-  .day-move{margin-left:auto;display:inline-flex;gap:3px;flex:none}
-  .day-move button{background:var(--line);border:none;color:var(--ink);border-radius:5px;width:24px;height:22px;font-size:11px;cursor:pointer;padding:0;line-height:1}
-  .day-move button:active{background:var(--accent);color:#fff}
+  .mv-up,.mv-dn{display:block;width:100%;background:var(--line);border:none;color:var(--mut);height:18px;font-size:10px;cursor:pointer;border-radius:6px;padding:0;line-height:1}
+  .mv-up{margin-bottom:6px}.mv-dn{margin-top:6px}
+  .mv-up:active,.mv-dn:active{background:var(--accent);color:#fff}
+  .lk{margin-left:auto;background:var(--line);border:none;color:var(--ink);border-radius:6px;width:28px;height:24px;font-size:13px;cursor:pointer;padding:0;flex:none}
+  .assoc{margin-top:6px;font-size:12px;color:var(--good);cursor:pointer}
   .link-list{display:flex;flex-direction:column;gap:6px;max-height:52vh;overflow-y:auto}
   .link-opt{text-align:left;background:var(--line);border:none;color:var(--ink);padding:10px 12px;border-radius:8px;cursor:pointer;font-size:13px}
   .link-opt:active{background:var(--accent);color:#fff}
@@ -522,11 +524,20 @@ async function moveSession(id,dir){
   await loadData();
 }
 function linkSession(id,date){
+  const used=new Set(((D.plan&&D.plan.used_activities)||[]).map(String));
   const tgt=new Date(date).getTime();
-  const acts=(D.workouts||[]).filter(w=>w.activity_id).map(w=>({...w,dd:Math.abs(new Date(w.date).getTime()-tgt)/864e5}))
+  const acts=(D.workouts||[]).filter(w=>w.activity_id&&!used.has(String(w.activity_id)))
+    .map(w=>({...w,dd:Math.abs(new Date(w.date).getTime()-tgt)/864e5}))
     .filter(w=>w.dd<=14).sort((a,b)=>a.dd-b.dd);
   const opts=acts.map(w=>`<button class="link-opt" onclick="doLink(${id},'${w.activity_id}')">${w.date} · ${w.name||'Sortie'} · ${w.dist} km${w.dplus?' · +'+w.dplus+'m':''}</button>`).join('');
-  openModalHtml(`<h3>Associer une sortie</h3><div class="muted" style="margin:6px 0 10px">Quelle sortie réalisée correspond à cette séance ?</div><div class="link-list">${opts||'<div class="muted">Aucune sortie récente (±14 jours).</div>'}</div>`);
+  openModalHtml(`<h3>Associer une sortie</h3><div class="muted" style="margin:6px 0 10px">Quelle sortie réalisée correspond à cette séance ?</div><div class="link-list">${opts||'<div class="muted">Aucune sortie libre à ±14 jours.</div>'}</div>`);
+}
+function showAssoc(id){
+  let d=null;(D.plan.weeks||[]).forEach(w=>(w.days||[]).forEach(x=>{if(x.id===id)d=x;}));
+  if(!d||!d.act){return;} const a=d.act;
+  openModalHtml(`<h3>${d.name}</h3><div class="muted">Séance faite, associée à cette sortie :</div>
+    <div class="link-opt" style="margin:10px 0;cursor:default">${a.date} · ${a.name||'Sortie'} · ${a.km} km${a.dplus?' · +'+a.dplus+'m':''}</div>
+    <button class="btn ghost" onclick="doLink(${id},null)">Délier</button>`);
 }
 async function doLink(id,act){
   closeModal();
@@ -579,11 +590,16 @@ function renderPlan(){
       if(d.type==='rest')return `<div class="${cls}"><div class="day-head"><div class="dl">${d.dow}</div><div class="dn" style="color:var(--mut);font-weight:500">Repos</div></div></div>`;
       const zb=d.zone?`<span class="zbadge" style="background:${ZCOL[d.zone]}">${d.zone} ${d.bpm}</span>`:'';
       const done=d.done?'<span class="done-tag">✓ fait</span>':'';
-      const mv=(d.id&&d.type!=='race')?`<span class="day-move"><button onclick="moveSession(${d.id},-1)" title="Décaler au jour précédent">◀</button><button onclick="moveSession(${d.id},1)" title="Décaler au jour suivant">▶</button>${d.done?'':`<button onclick="linkSession(${d.id},'${d.date}')" title="Associer une sortie réalisée">🔗</button>`}</span>`:'';
-      return `<div class="${cls}"><div class="day-head"><div class="dl">${d.dow}</div><div class="dn">${d.name} ${zb} ${done}</div>${mv}</div>
+      const editable=(d.id&&d.type!=='race'&&!d.done);   // pas de deplacement/lien sur une seance faite
+      const up=editable?`<button class="mv-up" onclick="moveSession(${d.id},-1)" title="Décaler au jour précédent">▲</button>`:'';
+      const dn=editable?`<button class="mv-dn" onclick="moveSession(${d.id},1)" title="Décaler au jour suivant">▼</button>`:'';
+      const lk=editable?`<button class="lk" onclick="linkSession(${d.id},'${d.date}')" title="Associer une sortie réalisée">🔗</button>`:'';
+      const assoc=(d.done&&d.act)?`<div class="assoc" onclick="showAssoc(${d.id})" title="Voir la sortie associée">↳ ${d.act.name||'sortie'} · ${d.act.date.slice(5)} · ${d.act.km} km</div>`:'';
+      return `<div class="${cls}">${up}<div class="day-head"><div class="dl">${d.dow}</div><div class="dn">${d.name} ${zb} ${done}</div>${lk}</div>
         ${zbar(d.steps)}
         <div class="dd">${d.detail||''}${d.pace?' · allure cible '+d.pace:''}</div>
-        ${d.nutrition?'<div class="dd" style="color:var(--warn)">🥤 '+d.nutrition+'</div>':''}</div>`;
+        ${d.nutrition?'<div class="dd" style="color:var(--warn)">🥤 '+d.nutrition+'</div>':''}
+        ${assoc}${dn}</div>`;
     }).join('');
     return `<div class="wk ${open}" id="wk${wi}"><div class="wk-head ${cur}" onclick="document.getElementById('wk${wi}').classList.toggle('open')">
       <span class="arrow">▸</span><span class="wk-title">${wk.is_current?'Cette sem.':'S'+wk.week_number} <span class="muted" style="font-weight:400">${dr}</span></span>
