@@ -235,6 +235,11 @@
 
   <div id="plan" class="section">
     <div class="panel" id="plan-goal"></div>
+    <div class="panel" id="plan-load-panel" style="display:none">
+      <h3>Charge par zone <span class="muted" style="font-weight:400">— temps/sem sur la durée du plan</span></h3>
+      <div class="legend" id="plan-load-legend"></div>
+      <div class="chart-row"><svg class="yaxis" id="plan-load-y"></svg><div class="scrollx"><svg id="plan-load"></svg></div></div>
+    </div>
     <div class="panel"><h3 id="plan-title">Plan</h3><div id="plan-weeks"></div></div>
   </div>
 
@@ -301,7 +306,7 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 function hideSplash(){const s=document.getElementById('splash');if(!s)return;
   setTimeout(()=>s.classList.add('hide'),Math.max(0,5000-(Date.now()-SPLASH_T0)));} // min 5s
 function renderAll(){
-  renderUserChip(); renderAthlete(); renderFitness(); drawWeekly(); drawYearly(); renderZones(); drawDrift(); drawBody(); renderPlan(); renderWorkouts(); renderMethode();
+  renderUserChip(); renderAthlete(); renderFitness(); drawWeekly(); drawYearly(); renderZones(); drawDrift(); drawBody(); renderPlan(); drawPlanLoad(); renderWorkouts(); renderMethode();
 }
 function initNav(){document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));
@@ -517,6 +522,31 @@ function renderMethode(){
   let tail=' → priorité endurance de base, intensité dosée';
   if(weak){bits.push(`fragilité <b>${esc(weak)}</b>`); tail=` → on évite la zone grise Z3 (stress prolongé) pour protéger ${esc(weak)}`;}
   el.innerHTML=`<b>Pourquoi pour toi :</b> ${bits.join(', ')}${tail}. CTL/ATL utilisé en complément pour doser la charge.`;
+}
+function drawPlanLoad(){
+  const p=D.plan, panel=document.getElementById('plan-load-panel');
+  if(!panel)return;
+  if(!p||!p.weeks||!p.weeks.length){panel.style.display='none';return;}
+  panel.style.display='';
+  const wk=p.weeks,n=wk.length,Z=['Z1','Z2','Z3','Z4','Z5'];
+  const H=220,W=Math.max(820,n*42),L=8,R=44,T=14,B=28,iw=W-L-R,ih=H-T-B;
+  let maxT=1; wk.forEach(w=>{let t=0;Z.forEach(z=>t+=(w.zoneVol&&w.zoneVol[z])||0);maxT=Math.max(maxT,t);}); maxT*=1.12;
+  const gap=iw/Math.max(1,n-1),X=i=>L+gap*i,Y=v=>T+ih-v/maxT*ih;
+  let s=`<line x1="${L}" y1="${T+ih}" x2="${W-R}" y2="${T+ih}" stroke="var(--line)"/>`,ticks=[];
+  const step=Math.max(30,Math.ceil(maxT/4/30)*30);
+  for(let g=0;g<=maxT;g+=step){const y=Y(g);ticks.push({y,t:g+'′'});s+=`<line x1="${L}" y1="${y}" x2="${W-R}" y2="${y}" stroke="var(--line)" stroke-dasharray="2 4"/>`;}
+  let cum=wk.map(()=>0);
+  Z.forEach(z=>{
+    const top=wk.map((w,i)=>cum[i]+((w.zoneVol&&w.zoneVol[z])||0));
+    const up=top.map((v,i)=>`${X(i)},${Y(v)}`);
+    const dn=cum.map((v,i)=>`${X(i)},${Y(v)}`).reverse();
+    s+=`<polygon points="${up.concat(dn).join(' ')}" fill="${ZCOL[z]}" opacity="0.82"/>`;
+    cum=top;
+  });
+  wk.forEach((w,i)=>{if(i%Math.ceil(n/10)===0||i===n-1)s+=`<text class="axis" x="${X(i)}" y="${T+ih+15}" text-anchor="middle" fill="var(--mut)" font-size="10">S${w.week_number}</text>`;});
+  document.getElementById('plan-load-legend').innerHTML=Z.map(z=>`<span style="color:${ZCOL[z]}">● ${z}</span>`).join(' ');
+  const cur=wk.findIndex(w=>w.is_current);
+  paint('plan-load',W,H,s,ticks,X(Math.max(0,cur)));
 }
 async function moveSession(id,dir){
   if(!id)return;
