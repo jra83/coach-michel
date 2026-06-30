@@ -17,8 +17,8 @@ Ce fichier = périmètre minimal pour ne PAS ré-explorer tout le repo à chaque
 
 ## Build / smoke — jamais sur l'arbre servi
 - node n'est pas dans le PATH de login : `PATH=$HOME/.hermes/node/bin:$PATH`.
-- Smoke = build vers un dossier temp (ne touche pas le live) :
-  `PATH=$HOME/.hermes/node/bin:$PATH ./node_modules/.bin/vite build --outDir /tmp/cm-smoke --emptyOutDir`
+- Smoke = `bash smoke.sh` : valide la SYNTAXE du `<script>` inline (node --check) PUIS le build.
+  IMPORTANT : `vite build` seul NE valide PAS le `<script>` inline -> un `}` manquant passe le build mais casse l app. Toujours `smoke.sh`.
 - `vitest` existe mais ~pas de tests : utiliser le build comme smoke.
 
 ## Règles
