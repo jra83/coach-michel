@@ -192,16 +192,18 @@
     <div class="panel">
       <h3>Forme / Fatigue (CTL / ATL) <span class="muted" style="font-weight:400">— historique + projection 8 sem</span></h3>
       <div class="legend"><span style="color:#3aa0ff">● CTL forme</span> <span style="color:#f59e0b">● ATL fatigue</span> <span class="muted">— pointillé = projection</span></div>
+      <div class="muted" style="font-size:13px;margin:4px 0 8px"><b>CTL</b> = charge moyenne des 6 dernières semaines (ta « forme de fond »). <b>ATL</b> = charge des 1-2 dernières semaines (ta fatigue du moment). Forme nette (TSB) = CTL − ATL : positif → tu es frais, négatif → tu charges.</div>
       <div class="chart-row"><svg class="yaxis" id="fitness-chart-y"></svg><div class="scrollx"><svg id="fitness-chart"></svg></div></div>
       <div class="hint">← glisse pour balayer la période →</div>
     </div>
     <div class="panel">
       <h3>Volume hebdo</h3>
       <div class="legend"><span style="color:var(--accent)">● km</span> <span style="color:var(--accent2)">● D+</span> <span class="muted">— barres claires = planifié</span></div>
+      <div class="muted" style="font-size:13px;margin:4px 0 8px">Volume en <b>km/sem</b> sur les 16 dernières semaines. Les barres pleines = semaines réalisées (Strava), les barres claires = semaines à venir selon le plan.</div>
       <div class="chart-row"><svg class="yaxis" id="weekly-chart-y"></svg><div class="scrollx"><svg id="weekly-chart"></svg></div></div>
     </div>
     <div class="panel" id="workouts-panel">
-      <h3>Dernieres sorties <span class="muted" style="font-weight:400">(clic = analyse + camembert)</span></h3>
+      <h3>Dernières sorties <span class="muted" style="font-weight:400">— clique sur une sortie pour voir l'analyse détaillée et la répartition par zone</span></h3>
       <div id="workouts-list"></div>
     </div>
   </div>
@@ -244,6 +246,7 @@
     <div class="panel" id="plan-summary" style="display:none;border-left:3px solid var(--accent);padding-left:14px;font-size:14px"></div>
     <div class="panel" id="plan-load-panel" style="display:none">
       <h3>Charge par zone <span class="muted" style="font-weight:400">— temps/sem sur la durée du plan</span></h3>
+      <div class="muted" style="font-size:13px;margin:4px 0 8px">Répartition 80/20 : l'essentiel du temps en <b>Z1-Z2</b> (endurance de base, conversation possible), les séances clés en <b>Z4-Z5</b> (intensité). La <b>Z3</b> (zone grise, tempo difficile à soutenir) est volontairement limitée — elle cumule fatigue sans gain proportionnel.</div>
       <div class="legend" id="plan-load-legend"></div>
       <div class="chart-row"><svg class="yaxis" id="plan-load-y"></svg><div class="scrollx"><svg id="plan-load"></svg></div></div>
     </div>
