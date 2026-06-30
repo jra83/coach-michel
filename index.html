@@ -312,7 +312,7 @@ const SPLASH_T0=Date.now();
 function setStep(t){const e=document.querySelector('#splash .sp-txt');if(e)e.textContent=t;}
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 function hideSplash(){const s=document.getElementById('splash');if(!s)return;
-  setTimeout(()=>s.classList.add('hide'),Math.max(0,5000-(Date.now()-SPLASH_T0)));} // min 5s
+  setTimeout(()=>s.classList.add('hide'),Math.max(0,1500-(Date.now()-SPLASH_T0)));} // min 1.5s
 function renderAll(){
   renderUserChip(); renderAthlete(); renderFitness(); drawWeekly(); drawYearly(); renderZones(); drawDrift(); drawBody(); renderPlan(); drawPlanLoad(); renderWorkouts(); renderMethode();
 }
