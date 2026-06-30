@@ -353,10 +353,10 @@ function renderFitness(){
     `<div class="card"><div class="k">Reco</div><div class="v txt">${f.tsb>=0?'Maintenir':'Alleger'}</div></div>`;
   {const sumEl=document.getElementById('fitness-summary');
   if(sumEl){const tsb=f.tsb,ctl=f.ctl,atl=f.atl;let msg;
-    if(tsb>=5)msg=`Bonne forme (CTL <b>${ctl}</b>, ATL <b>${atl}</b>) — tu es frais et prêt à performer.`;
-    else if(tsb>=-5)msg=`Forme équilibrée (CTL <b>${ctl}</b>, ATL <b>${atl}</b>) — charge et récup se compensent bien.`;
-    else if(tsb>=-15)msg=`En charge (ATL <b>${atl}</b> > CTL <b>${ctl}</b>) — la fatigue monte, veille à bien récupérer.`;
-    else msg=`Fatigue élevée (ATL <b>${atl}</b> >> CTL <b>${ctl}</b>) — allège la charge pour progresser.`;
+    if(tsb>=5)msg=`Bonne forme (CTL <b>${ctl}</b>, ATL <b>${atl}</b>) — tu es frais et prêt à performer.<br><span class="muted" style="font-size:13px">C'est le bon moment pour placer une séance intensive ou une longue sortie. Profite de cette fenêtre.</span>`;
+    else if(tsb>=-5)msg=`Forme équilibrée (CTL <b>${ctl}</b>, ATL <b>${atl}</b>) — charge et récup se compensent bien.<br><span class="muted" style="font-size:13px">Tu peux maintenir le rythme habituel. Surveille ta qualité de sommeil pour rester dans cet équilibre.</span>`;
+    else if(tsb>=-15)msg=`En charge (ATL <b>${atl}</b> > CTL <b>${ctl}</b>) — la fatigue monte, veille à bien récupérer.<br><span class="muted" style="font-size:13px">Priorise le sommeil et l'alimentation. Évite d'ajouter une séance de plus cette semaine.</span>`;
+    else msg=`Fatigue élevée (ATL <b>${atl}</b> >> CTL <b>${ctl}</b>) — allège la charge pour progresser.<br><span class="muted" style="font-size:13px">Un jour de repos complet s'impose. La progression passe par la récupération, pas par l'accumulation.</span>`;
     sumEl.innerHTML=msg;sumEl.style.display='';}}
   const hist=f.history||[]; if(!hist.length){return;}
   const n=hist.length,H=240,W=Math.max(820,n*52),L=8,R=34,T=24,B=28,iw=W-L-R,ih=H-T-B;
@@ -641,7 +641,8 @@ function renderPlan(){
     if(raceDate){const dr=Math.ceil((new Date(raceDate)-new Date())/864e5);
       if(dr>0)parts.push(`J-<b>${dr}</b> avant ${raceLabel}`);}
     if(curWk&&curWk.planned>0)parts.push(`${curWk.done_count}/${curWk.planned} séances faites`);
-    planSumEl.innerHTML=parts.join(' · ');planSumEl.style.display='';}}
+    let phase2='';if(curWk&&totalWk>0){const pct=curWk.week_number/totalWk;if(pct<=0.4)phase2='Phase de base — pose les fondations de ton endurance.';else if(pct<=0.7)phase2='Phase d\'intensité — les séances clés entrent dans le plan.';else if(pct<=0.9)phase2='Phase d\'affûtage — réduis le volume, affûte la forme.';else phase2='Semaine de compétition — préserve tes jambes, arrive frais à la ligne.';}
+    planSumEl.innerHTML=parts.join(' · ')+(phase2?'<br><span class="muted" style="font-size:13px">'+phase2+'</span>':'');planSumEl.style.display='';}}
   const adhCol=v=>v>=80?'#39d98a':v>=50?'#e0a93a':'#e36';
   const a=p.assiduite;
   const assCard=(a&&a.due>0)?`<div class="card" style="margin-bottom:14px">
