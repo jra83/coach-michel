@@ -105,13 +105,18 @@
   .cmsg{padding:9px 13px;border-radius:13px;margin-bottom:8px;max-width:86%;font-size:14px;line-height:1.45;white-space:pre-wrap}
   .cmsg.user{background:var(--accent);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
   .cmsg.coach{background:var(--line);align-self:flex-start;border-bottom-left-radius:4px}
+  .cmsg.typing{display:inline-flex;gap:5px;align-items:center}
+  .cmsg.typing span{width:7px;height:7px;border-radius:50%;background:var(--mut);animation:typingdot 1.2s infinite ease-in-out}
+  .cmsg.typing span:nth-child(2){animation-delay:.18s}
+  .cmsg.typing span:nth-child(3){animation-delay:.36s}
+  @keyframes typingdot{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-4px);opacity:1}}
   .chat-in-row{display:flex;gap:8px}
   .chat-in-row input{flex:1;background:#0f1115;border:1px solid var(--line);color:var(--ink);border-radius:20px;padding:11px 15px;font-size:16px}
   .replan-card{background:#1c2128;border:1px dashed var(--accent);border-radius:12px;padding:14px;margin-bottom:14px;display:flex;align-items:center;gap:12px}
   .grid-prof{display:grid;grid-template-columns:repeat(auto-fit,minmax(108px,1fr));gap:14px;font-size:14px}
   .grid-prof>div{line-height:1.5}
   .fld{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--mut)}
-  .fld input{background:#0f1115;border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:8px 9px;font-size:14px}
+  .fld input,.fld select{background:#0f1115;border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:8px 9px;font-size:14px}
   .btn{cursor:pointer;border:none;border-radius:10px;padding:8px 16px;font-size:14px;font-weight:600}
   .btn.primary{background:var(--accent);color:#fff}.btn.ghost{background:var(--line);color:var(--ink)}
   /* Ecran de connexion */
@@ -182,6 +187,7 @@
   </nav>
 
   <div id="dashboard" class="section active">
+    <div class="panel" id="fitness-summary" style="display:none;border-left:3px solid #3aa0ff;padding-left:14px;font-size:14px"></div>
     <div class="cards" id="fitness-cards"></div>
     <div class="panel">
       <h3>Forme / Fatigue (CTL / ATL) <span class="muted" style="font-weight:400">— historique + projection 8 sem</span></h3>
@@ -214,7 +220,7 @@
         <span style="color:var(--err)">--- cible 5%</span>
       </div>
       <div class="chart-row"><svg class="yaxis" id="drift-chart-y"></svg><div class="scrollx"><svg id="drift-chart"></svg></div></div>
-      <div class="hint">Decouplage FC/allure 2e vs 1re moitie. Sous la barre 0 = tu finis plus efficient (frequent en trail descendant).</div>
+      <div class="hint">Dérive de l'efficience allure/FC (2e vs 1re moitié), mesurée sur le cœur d'allure tenue (vitesse ~constante). Au-dessus de 5 % = la FC monte pour tenir l'allure (fatigue, départ trop vite). Sous 0 = tu finis plus efficient (fréquent en trail descendant).</div>
     </div>
     <div class="panel">
       <h3>Poids & composition <span class="muted" style="font-weight:400">(Withings)</span></h3>
@@ -235,6 +241,7 @@
 
   <div id="plan" class="section">
     <div class="panel" id="plan-goal"></div>
+    <div class="panel" id="plan-summary" style="display:none;border-left:3px solid var(--accent);padding-left:14px;font-size:14px"></div>
     <div class="panel" id="plan-load-panel" style="display:none">
       <h3>Charge par zone <span class="muted" style="font-weight:400">— temps/sem sur la durée du plan</span></h3>
       <div class="legend" id="plan-load-legend"></div>
@@ -344,6 +351,13 @@ function renderFitness(){
     `<div class="card"><div class="k">Marge / limite ${f.limit}km</div><div class="v">${marge}<small> km</small></div></div>`+
     `<div class="card"><div class="k">Statut</div><div class="v txt">${f.tsb>=0?'Frais':'En charge'}</div></div>`+
     `<div class="card"><div class="k">Reco</div><div class="v txt">${f.tsb>=0?'Maintenir':'Alleger'}</div></div>`;
+  {const sumEl=document.getElementById('fitness-summary');
+  if(sumEl){const tsb=f.tsb,ctl=f.ctl,atl=f.atl;let msg;
+    if(tsb>=5)msg=`Bonne forme (CTL <b>${ctl}</b>, ATL <b>${atl}</b>) — tu es frais et prêt à performer.`;
+    else if(tsb>=-5)msg=`Forme équilibrée (CTL <b>${ctl}</b>, ATL <b>${atl}</b>) — charge et récup se compensent bien.`;
+    else if(tsb>=-15)msg=`En charge (ATL <b>${atl}</b> > CTL <b>${ctl}</b>) — la fatigue monte, veille à bien récupérer.`;
+    else msg=`Fatigue élevée (ATL <b>${atl}</b> >> CTL <b>${ctl}</b>) — allège la charge pour progresser.`;
+    sumEl.innerHTML=msg;sumEl.style.display='';}}
   const hist=f.history||[]; if(!hist.length){return;}
   const n=hist.length,H=240,W=Math.max(820,n*52),L=8,R=34,T=24,B=28,iw=W-L-R,ih=H-T-B;
   let mx=60; hist.forEach(d=>mx=Math.max(mx,d.ctl,d.atl)); mx*=1.15;
@@ -445,6 +459,14 @@ function renderAthlete(){
 function editAthlete(){
   const a=D.athlete,el=document.getElementById('profile-card');
   const f=(lab,k,v,attr='')=>`<label class="fld"><span>${lab}</span><input id="pf-${k}" value="${v==null?'':v}" ${attr}></label>`;
+  const DN=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
+  const tdays=(a.preferred_days||[]);
+  const dayOpts=(cur)=>`<option value="auto"${!cur?' selected':''}>Auto (défaut)</option>`+
+    tdays.map(dn=>`<option value="${dn}"${cur==dn?' selected':''}>${DN[dn-1]}</option>`).join('');
+  const longFld=tdays.length
+    ? `<label class="fld"><span>Jour de la sortie longue</span><select id="pf-long_day">${dayOpts(a.long_day)}</select></label>
+       <label class="fld"><span>Jour de la séance qualité</span><select id="pf-quality_day">${dayOpts(a.quality_day)}</select></label>`
+    : `<div class="fld" style="grid-column:1/-1"><span>Jours d'entraînement non définis — dis-les à Michou pour pouvoir choisir le jour de ta longue.</span></div>`;
   el.innerHTML=`<h3 style="margin-bottom:12px">Éditer le profil</h3><div class="grid-prof">
       ${f('Prénom','first_name',a.first_name)}
       ${f('Date de naissance','birth_date',a.birth_date,'type="date"')}
@@ -453,8 +475,9 @@ function editAthlete(){
       ${f('FC repos (bpm)','fc_rest',a.fc_rest,'type="number"')}
       ${f('FC max (bpm)','fc_max',a.fc_max,'type="number"')}
       ${f('Séances/sem','sessions_per_week',a.sessions_per_week,'type="number"')}
-      ${f('Objectif poids (kg)','weight_goal_kg',a.weight_goal_kg,'type="number" step="0.1"')}</div>
-    <div class="muted" style="margin:10px 0">Le <b>poids manuel</b> est utilisé s'il n'y a pas de Withings. La <b>FC repos</b> = ta valeur de nuit si pas de montre. L'objectif de course est en haut du Plan.</div>
+      ${f('Objectif poids (kg)','weight_goal_kg',a.weight_goal_kg,'type="number" step="0.1"')}
+      ${longFld}</div>
+    <div class="muted" style="margin:10px 0">Le <b>poids manuel</b> est utilisé s'il n'y a pas de Withings. La <b>FC repos</b> = ta valeur de nuit si pas de montre. Le <b>jour de la longue/qualité</b> régénère le plan. L'objectif de course est en haut du Plan.</div>
     <button class="btn primary" onclick="saveAthlete()">Enregistrer</button>
     <button class="btn ghost" style="margin-left:8px" onclick="renderAthlete()">Annuler</button>`;
 }
@@ -462,6 +485,7 @@ async function saveAthlete(){
   const keys=['first_name','birth_date','height_cm','weight','fc_rest','fc_max','sessions_per_week','weight_goal_kg'];
   const d={}; keys.forEach(k=>{const e=document.getElementById('pf-'+k); if(e)d[k]=e.value;});
   ['height_cm','weight','fc_rest','fc_max','sessions_per_week','weight_goal_kg'].forEach(k=>{if(d[k]!=='')d[k]=parseFloat(d[k]);});
+  ['long_day','quality_day'].forEach(k=>{const e=document.getElementById('pf-'+k); if(e)d[k]=(e.value==='auto'?null:parseInt(e.value));});
   document.getElementById('profile-card').innerHTML='<div class="muted">Enregistrement…</div>';
   let j={};
   try{const res=await fetch('/api/athlete',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});j=await res.json();}catch(e){}
@@ -568,13 +592,14 @@ function linkSession(id,date){
 function showAssoc(id){
   let d=null;(D.plan.weeks||[]).forEach(w=>(w.days||[]).forEach(x=>{if(x.id===id)d=x;}));
   if(!d||!d.act){return;} const a=d.act;
+  const adh=(a.adh!=null)?` · <b style="color:${a.adh>=80?'#39d98a':a.adh>=50?'#e0a93a':'#e36'}">Adh ${a.adh}%</b>`:'';
   openModalHtml(`<h3>${d.name}</h3><div class="muted">Séance faite, associée à cette sortie :</div>
-    <div class="link-opt" style="margin:10px 0;cursor:default">${a.date} · ${a.name||'Sortie'} · ${a.km} km${a.dplus?' · +'+a.dplus+'m':''}</div>
-    <button class="btn ghost" onclick="doLink(${id},null)">Délier</button>`);
+    <div class="link-opt" style="margin:10px 0;cursor:default">${a.date} · ${a.name||'Sortie'} · ${a.km} km${a.dplus?' · +'+a.dplus+'m':''}${adh}</div>
+    <button class="btn ghost" onclick="doLink(${id},null,'${a.id}')">Délier</button>`);
 }
-async function doLink(id,act){
+async function doLink(id,act,unlinkAct){
   closeModal();
-  try{await fetch('/api/plan/associate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:id,activity_id:act})});}catch(e){}
+  try{await fetch('/api/plan/associate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:id,activity_id:act,unlink_activity:unlinkAct||null})});}catch(e){}
   await loadData();
 }
 function renderPlan(){
@@ -607,6 +632,16 @@ function renderPlan(){
     if(!window._chatAuto){window._chatAuto=true;setTimeout(openChat,600);}
     return;
   }
+  {const planSumEl=document.getElementById('plan-summary');
+  if(planSumEl){const curWk=p.weeks.find(w=>w.is_current),totalWk=p.weeks.length,parts=[];
+    if(curWk)parts.push(`Semaine ${curWk.week_number} sur ${totalWk}`);
+    const objs=(p.objectives||[]);
+    const raceDate=(objs.length&&objs[0].race_date)?objs[0].race_date:p.target_race_date;
+    const raceLabel=(objs.length&&objs[0].label)||p.target_race||'la course';
+    if(raceDate){const dr=Math.ceil((new Date(raceDate)-new Date())/864e5);
+      if(dr>0)parts.push(`J-<b>${dr}</b> avant ${raceLabel}`);}
+    if(curWk&&curWk.planned>0)parts.push(`${curWk.done_count}/${curWk.planned} séances faites`);
+    planSumEl.innerHTML=parts.join(' · ');planSumEl.style.display='';}}
   const adhCol=v=>v>=80?'#39d98a':v>=50?'#e0a93a':'#e36';
   const a=p.assiduite;
   const assCard=(a&&a.due>0)?`<div class="card" style="margin-bottom:14px">
@@ -622,13 +657,16 @@ function renderPlan(){
       const cls=['day',d.status==='today'?'today':'',d.status==='past'?'past':''].join(' ');
       if(d.type==='rest')return `<div class="${cls}"><div class="day-head"><div class="dl">${d.dow}</div><div class="dn" style="color:var(--mut);font-weight:500">Repos</div></div></div>`;
       const zb=d.zone?`<span class="zbadge" style="background:${ZCOL[d.zone]}">${d.zone} ${d.bpm}</span>`:'';
+      // distance estimee pour les seances autres que la longue (qui l'a deja dans son nom)
+      const km=(d.type!=='long'&&d.dist)?`<span class="muted" style="font-weight:400">· ~${Math.round(d.dist)} km</span>`:'';
       const done=d.done?'<span class="done-tag">✓ fait</span>':'';
       const editable=(d.id&&d.type!=='race'&&!d.done);   // pas de deplacement/lien sur une seance faite
       const up=editable?`<button class="mv-up" onclick="moveSession(${d.id},-1)" title="Décaler au jour précédent">▲</button>`:'';
       const dn=editable?`<button class="mv-dn" onclick="moveSession(${d.id},1)" title="Décaler au jour suivant">▼</button>`:'';
       const lk=editable?`<button class="lk" onclick="linkSession(${d.id},'${d.date}')" title="Associer une sortie réalisée">🔗</button>`:'';
-      const assoc=(d.done&&d.act)?`<div class="assoc" onclick="showAssoc(${d.id})" title="Voir la sortie associée">↳ ${d.act.name||'sortie'} · ${d.act.date.slice(5)} · ${d.act.km} km</div>`:'';
-      return `<div class="${cls}">${up}<div class="day-head"><div class="dl">${d.dow}</div><div class="dn">${d.name} ${zb} ${done}</div>${lk}</div>
+      const aAdh=(d.act&&d.act.adh!=null)?` · <b style="color:${d.act.adh>=80?'#39d98a':d.act.adh>=50?'#e0a93a':'#e36'}">Adh ${d.act.adh}%</b>`:'';
+      const assoc=(d.done&&d.act)?`<div class="assoc" onclick="showAssoc(${d.id})" title="Voir la sortie associée">↳ ${d.act.name||'sortie'} · ${d.act.date.slice(5)} · ${d.act.km} km${aAdh}</div>`:'';
+      return `<div class="${cls}">${up}<div class="day-head"><div class="dl">${d.dow}</div><div class="dn">${d.name} ${km} ${zb} ${done}</div>${lk}</div>
         ${zbar(d.steps)}
         <div class="dd">${d.detail||''}${d.pace?' · allure cible '+d.pace:''}</div>
         ${d.nutrition?'<div class="dd" style="color:var(--warn)">🥤 '+d.nutrition+'</div>':''}
@@ -668,13 +706,46 @@ async function showWorkout(i){
   document.getElementById('modal-body').innerHTML=`<h3>${w.name||'Sortie'} <span class="muted" style="font-weight:400">${w.date}</span></h3>
     <div style="display:flex;gap:16px;align-items:center;margin-top:8px">${w.hrZones?pie(w.hrZones,96):'<div class="muted">Pas de capteur FC</div>'}
     <div class="muted" style="font-size:13.5px;line-height:1.7">${w.dist} km · D+ ${w.dplus} m<br>Temps ${mm}:${ss} · Allure ${pace}<br>FC moy ${w.fcavg} · FC max ${w.fcmax}</div></div>${zl}
+    <div id="detail-box"></div>
     <h3 style="margin-top:16px">Analyse Coach Michel</h3><div id="ana-box" class="ana muted">Chargement…</div>`;
   document.getElementById('modal').classList.add('open');
+  jget('/api/workout/detail/'+w.activity_id).then(det=>{
+    const box=document.getElementById('detail-box');if(box)box.innerHTML=renderDetail(det);
+  }).catch(()=>{});
   try{const a=await jget('/api/workout/analysis/'+w.activity_id);
     const box=document.getElementById('ana-box');box.classList.remove('muted');box.textContent=a.analysis_text||'(pas d\'analyse)';
     if(!w.hasAnalysis){w.hasAnalysis=true;renderWorkouts();}
   }catch(e){document.getElementById('ana-box').textContent='Analyse indisponible.';}
 }
+// Tableau des reps (fractionne) ou des splits par km dans la modale de sortie
+function renderDetail(det){
+  if(!det)return '';
+  const cell='padding:4px 8px;text-align:right;font-variant-numeric:tabular-nums';
+  const head='padding:4px 8px;text-align:right;color:var(--mut);font-weight:600;font-size:11px;text-transform:uppercase';
+  if(det.is_intervals&&det.reps&&det.reps.length){
+    const r=det.reps;
+    const rows=r.map((x,i)=>{const t=`${Math.floor(x.sec/60)}:${String(x.sec%60).padStart(2,'0')}`;
+      return `<tr><td style="${cell};text-align:left;color:var(--mut)">#${i+1}</td><td style="${cell}">${x.dist} m</td><td style="${cell}">${t}</td>
+      <td style="${cell};font-weight:600">${x.pace_str}/km</td><td style="${cell};color:var(--mut)">${x.pace_best_str}</td>
+      <td style="${cell}">${x.hr||'—'}<span class="muted" style="font-size:11px">/${x.hr_max||'—'}</span></td></tr>`;}).join('');
+    const paces=r.map(x=>x.pace).filter(Boolean);
+    const syn=paces.length?`<div class="muted" style="font-size:12px;margin-top:4px">${r.length} reps · plus rapide ${fmtPace(Math.min(...paces))}/km · plus lente ${fmtPace(Math.max(...paces))}/km · écart ${fmtPace(Math.max(...paces)-Math.min(...paces))}</div>`:'';
+    return `<h3 style="margin-top:16px">Fractionné — ${r.length} répétitions</h3>
+      <table style="width:100%;border-collapse:collapse;margin-top:6px;font-size:13px">
+      <tr><th style="${head};text-align:left">Rep</th><th style="${head}">Dist</th><th style="${head}">Temps</th><th style="${head}">Allure</th><th style="${head}">Pointe</th><th style="${head}">FC moy/max</th></tr>
+      ${rows}</table>${syn}`;
+  }
+  if(det.km_splits&&det.km_splits.length>=2){
+    const sp=det.km_splits,best=Math.min(...sp.map(s=>s.pace).filter(Boolean));
+    const rows=sp.map(s=>`<tr><td style="${cell};text-align:left;color:var(--mut)">km ${s.km}</td>
+      <td style="${cell};font-weight:600;${s.pace===best?'color:#39d98a':''}">${s.pace_str}/km</td>
+      <td style="${cell}">${s.hr?('FC '+s.hr):'—'}</td></tr>`).join('');
+    return `<h3 style="margin-top:16px">Splits par km</h3>
+      <table style="width:100%;border-collapse:collapse;margin-top:6px;font-size:13px">${rows}</table>`;
+  }
+  return '';
+}
+function fmtPace(sec){return `${Math.floor(sec/60)}:${String(Math.round(sec)%60).padStart(2,'0')}`;}
 function openModalHtml(html){document.getElementById('modal-body').innerHTML=html;document.getElementById('modal').classList.add('open');}
 function closeModal(){document.getElementById('modal').classList.remove('open');}
 // ---- Chat Michou (onboarding / re-plan) ----
@@ -683,14 +754,20 @@ function openChat(){
   document.getElementById('chat-overlay').classList.add('open');
   if(!chatMsgs.length){
     const nm=(D.athlete&&D.athlete.first_name)||'coureur';
-    chatMsgs=[{role:'coach',content:`Salut ${nm}. C'est quoi ton prochain objectif ? Une course avec sa date, ou juste progresser ?`}];
+    const hasPlan=D.plan&&D.plan.weeks&&D.plan.weeks.length;
+    chatMsgs=[{role:'coach',content: hasPlan
+      ? `Alors, ce plan ? Dis-moi si t'as des remarques, j'essaierai d'adapter.`
+      : `Salut ${nm}. C'est quoi ton prochain objectif ? Une course avec sa date, ou juste progresser ?`}];
   }
   renderChatMsgs(); setTimeout(()=>{const i=document.getElementById('chat-in');if(i)i.focus();},100);
 }
 function closeChat(){document.getElementById('chat-overlay').classList.remove('open');}
 function renderChatMsgs(){
   const box=document.getElementById('chat-msgs');
-  box.innerHTML=chatMsgs.map(m=>`<div class="cmsg ${m.role==='user'?'user':'coach'}">${(m.content||'').replace(/</g,'&lt;')}</div>`).join('');
+  box.innerHTML=chatMsgs.map(m=>{
+    if(m.role!=='user' && m.content==='…') return '<div class="cmsg coach typing"><span></span><span></span><span></span></div>';
+    return `<div class="cmsg ${m.role==='user'?'user':'coach'}">${(m.content||'').replace(/</g,'&lt;')}</div>`;
+  }).join('');
   box.scrollTop=box.scrollHeight;
 }
 async function sendChatMsg(){
@@ -703,6 +780,7 @@ async function sendChatMsg(){
     const r=await res.json();
     chatMsgs.pop(); chatMsgs.push({role:'coach',content:r.reply}); renderChatMsgs();
     if(r.generating){
+      window._doAutotune=!!r.autotune;   // plan neuf (post-onboarding) -> boucle d'optimisation autonome
       chatMsgs.push({role:'coach',content:'⏳ Génération de ton plan en cours…'}); renderChatMsgs();
       pollPlanStatus(0);
     }
@@ -715,11 +793,25 @@ async function pollPlanStatus(tries){
   let st='generating';
   try{const r=await fetch('/api/plan/status');st=(await r.json()).status;}catch(e){}
   if(st==='ready'){
-    chatMsgs.push({role:'coach',content:'✅ Ton plan est prêt ! Je te montre ça.'}); renderChatMsgs(); await loadData();
-    setTimeout(()=>{closeChat(); chatMsgs=[]; const pb=document.querySelector('.nav button[data-section="plan"]'); if(pb)pb.click();}, 1500);
+    chatMsgs.push({role:'coach',content:'✅ Plan généré. Je le passe en revue…'}); renderChatMsgs(); await loadData();
+    if(window._doAutotune){ window._doAutotune=false; await autotuneLoop(); }
+    setTimeout(()=>{closeChat(); chatMsgs=[]; const pb=document.querySelector('.nav button[data-section="plan"]'); if(pb)pb.click();}, 2200);
   } else if(st==='error'){
     chatMsgs.push({role:'coach',content:'❌ Erreur pendant la génération. Réessaie dans un moment.'}); renderChatMsgs();
   } else { setTimeout(()=>pollPlanStatus(tries+1), 2000); }
+}
+async function autotuneLoop(){
+  // Michou evalue le plan en GLM-5.2 et l'affine SEUL, jusqu'a 5 iterations, en commentant chaque passe.
+  for(let i=1;i<=5;i++){
+    chatMsgs.push({role:'coach',content:'…'}); renderChatMsgs();
+    let r;
+    try{ r=await (await fetch('/api/plan/autotune',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({iteration:i})})).json(); }
+    catch(e){ chatMsgs.pop(); chatMsgs.push({role:'coach',content:'Optimisation interrompue.'}); renderChatMsgs(); return; }
+    chatMsgs.pop();
+    chatMsgs.push({role:'coach',content:r.message||''}); renderChatMsgs();
+    await loadData();                 // rafraichit le plan entre chaque iteration
+    if(r.done) break;
+  }
 }
 async function boot(){
   let me={logged_in:false};
