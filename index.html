@@ -667,7 +667,7 @@ function renderPlan(){
       const dn=editable?`<button class="mv-dn" onclick="moveSession(${d.id},1)" title="Décaler au jour suivant">▼</button>`:'';
       const lk=editable?`<button class="lk" onclick="linkSession(${d.id},'${d.date}')" title="Associer une sortie réalisée">🔗</button>`:'';
       const aAdh=(d.act&&d.act.adh!=null)?` · <b style="color:${d.act.adh>=80?'#39d98a':d.act.adh>=50?'#e0a93a':'#e36'}">Adh ${d.act.adh}%</b>`:'';
-      const assoc=(d.done&&d.act)?`<div class="assoc" onclick="(function(){const idx=D.workouts.findIndex(w=>w.activity_id=='${d.act.activity_id}');idx>=0?showWorkout(idx):showAssoc(${d.id});})()" title="Ouvrir l\'analyse de la sortie" style="cursor:pointer">↳ ${d.act.name||'sortie'} · ${d.act.date.slice(5)} · ${d.act.km} km${aAdh} <span style="color:var(--acc);font-size:12px">↗</span></div>`:'';
+      const assoc=(d.done&&d.act)?`<div class="assoc" onclick="(function(){const idx=D.workouts.findIndex(w=>String(w.activity_id)===String('${d.act.id}'));idx>=0?showWorkout(idx):showAssoc(${d.id});})()" title="Ouvrir l'analyse de la sortie" style="cursor:pointer">↳ ${d.act.name||'sortie'} · ${d.act.date.slice(5)} · ${d.act.km} km${aAdh} <span style="color:var(--accent);font-size:12px">↗</span></div>`:'';
       return `<div class="${cls}">${up}<div class="day-head"><div class="dl">${d.dow}</div><div class="dn">${d.name} ${km} ${zb} ${done}</div>${lk}</div>
         ${zbar(d.steps)}
         <div class="dd">${d.detail||''}${d.pace?' · allure cible '+d.pace:''}</div>
@@ -734,6 +734,7 @@ function renderDetail(det){
   if(!det)return '';
   const cell='padding:4px 8px;text-align:right;font-variant-numeric:tabular-nums';
   const head='padding:4px 8px;text-align:right;color:var(--mut);font-weight:600;font-size:11px;text-transform:uppercase';
+  let html='';
   if(det.is_intervals&&det.reps&&det.reps.length){
     const r=det.reps;
     const rows=r.map((x,i)=>{const t=`${Math.floor(x.sec/60)}:${String(x.sec%60).padStart(2,'0')}`;
@@ -742,18 +743,10 @@ function renderDetail(det){
       <td style="${cell}">${x.hr||'—'}<span class="muted" style="font-size:11px">/${x.hr_max||'—'}</span></td></tr>`;}).join('');
     const paces=r.map(x=>x.pace).filter(Boolean);
     const syn=paces.length?`<div class="muted" style="font-size:12px;margin-top:4px">${r.length} reps · plus rapide ${fmtPace(Math.min(...paces))}/km · plus lente ${fmtPace(Math.max(...paces))}/km · écart ${fmtPace(Math.max(...paces)-Math.min(...paces))}</div>`:'';
-    return `<h3 style="margin-top:16px">Fractionné — ${r.length} répétitions</h3>
+    html+=`<h3 style="margin-top:16px">Fractionné — ${r.length} répétitions</h3>
       <table style="width:100%;border-collapse:collapse;margin-top:6px;font-size:13px">
       <tr><th style="${head};text-align:left">Rep</th><th style="${head}">Dist</th><th style="${head}">Temps</th><th style="${head}">Allure</th><th style="${head}">Pointe</th><th style="${head}">FC moy/max</th></tr>
       ${rows}</table>${syn}`;
-  }
-  if(det.km_splits&&det.km_splits.length>=2){
-    const sp=det.km_splits,best=Math.min(...sp.map(s=>s.pace).filter(Boolean));
-    const rows=sp.map(s=>`<tr><td style="${cell};text-align:left;color:var(--mut)">km ${s.km}</td>
-      <td style="${cell};font-weight:600;${s.pace===best?'color:#39d98a':''}">${s.pace_str}/km</td>
-      <td style="${cell}">${s.hr?('FC '+s.hr):'—'}</td></tr>`).join('');
-    return `<h3 style="margin-top:16px">Splits par km</h3>
-      <table style="width:100%;border-collapse:collapse;margin-top:6px;font-size:13px">${rows}</table>`;
   }
   if(det.climbs&&det.climbs.length>=1){
     const c=det.climbs;
@@ -768,12 +761,20 @@ function renderDetail(det){
     const vams=c.filter(cl=>cl.vam_mh!=null).map(cl=>cl.vam_mh);
     const vamMoy=vams.length?Math.round(vams.reduce((a,b)=>a+b,0)/vams.length):null;
     const syn=`<div class="muted" style="font-size:12px;margin-top:4px">${c.length} montée${c.length>1?'s':''} · D+ total ${totalDplus} m${vamMoy?' · VAM moy '+vamMoy+' m/h':''}</div>`;
-    return `<h3 style="margin-top:16px">Montées — ${c.length}</h3>
+    html+=`<h3 style="margin-top:16px">Montées — ${c.length}</h3>
       <table style="width:100%;border-collapse:collapse;margin-top:6px;font-size:13px">
       <tr><th style="${head};text-align:left">#</th><th style="${head}">D+</th><th style="${head}">Pente</th><th style="${head}">Durée</th><th style="${head}">VAM (m/h)</th><th style="${head}">FC</th></tr>
       ${rows}</table>${syn}`;
   }
-  return '';
+  if(det.km_splits&&det.km_splits.length>=2){
+    const sp=det.km_splits,best=Math.min(...sp.map(s=>s.pace).filter(Boolean));
+    const rows=sp.map(s=>`<tr><td style="${cell};text-align:left;color:var(--mut)">km ${s.km}</td>
+      <td style="${cell};font-weight:600;${s.pace===best?'color:#39d98a':''}">${s.pace_str}/km</td>
+      <td style="${cell}">${s.hr?('FC '+s.hr):'—'}</td></tr>`).join('');
+    html+=`<h3 style="margin-top:16px">Splits par km</h3>
+      <table style="width:100%;border-collapse:collapse;margin-top:6px;font-size:13px">${rows}</table>`;
+  }
+  return html;
 }
 function fmtPace(sec){return `${Math.floor(sec/60)}:${String(Math.round(sec)%60).padStart(2,'0')}`;}
 function openModalHtml(html){document.getElementById('modal-body').innerHTML=html;document.getElementById('modal').classList.add('open');}
