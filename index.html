@@ -667,7 +667,7 @@ function renderPlan(){
       const dn=editable?`<button class="mv-dn" onclick="moveSession(${d.id},1)" title="Décaler au jour suivant">▼</button>`:'';
       const lk=editable?`<button class="lk" onclick="linkSession(${d.id},'${d.date}')" title="Associer une sortie réalisée">🔗</button>`:'';
       const aAdh=(d.act&&d.act.adh!=null)?` · <b style="color:${d.act.adh>=80?'#39d98a':d.act.adh>=50?'#e0a93a':'#e36'}">Adh ${d.act.adh}%</b>`:'';
-      const assoc=(d.done&&d.act)?`<div class="assoc" onclick="showAssoc(${d.id})" title="Voir la sortie associée">↳ ${d.act.name||'sortie'} · ${d.act.date.slice(5)} · ${d.act.km} km${aAdh}</div>`:'';
+      const assoc=(d.done&&d.act)?`<div class="assoc" onclick="(function(){const idx=D.workouts.findIndex(w=>w.activity_id=='${d.act.activity_id}');idx>=0?showWorkout(idx):showAssoc(${d.id});})()" title="Ouvrir l\'analyse de la sortie" style="cursor:pointer">↳ ${d.act.name||'sortie'} · ${d.act.date.slice(5)} · ${d.act.km} km${aAdh} <span style="color:var(--acc);font-size:12px">↗</span></div>`:'';
       return `<div class="${cls}">${up}<div class="day-head"><div class="dl">${d.dow}</div><div class="dn">${d.name} ${km} ${zb} ${done}</div>${lk}</div>
         ${zbar(d.steps)}
         <div class="dd">${d.detail||''}${d.pace?' · allure cible '+d.pace:''}</div>
@@ -705,7 +705,8 @@ async function showWorkout(i){
   const w=D.workouts[i],mm=Math.floor(w.time/60),ss=String(w.time%60).padStart(2,'0');
   const pace=w.pace?`${Math.floor(w.pace)}:${String(Math.round((w.pace%1)*60)).padStart(2,'0')}/km`:'n/d';
   let zl=w.hrZones?'<div class="legend" style="margin-top:8px">'+['z1','z2','z3','z4','z5'].map(k=>`<span style="color:${ZCOL[k.toUpperCase()]}">● ${k.toUpperCase()} ${w.hrZones[k]||0}%</span>`).join('')+'</div>':'';
-  document.getElementById('modal-body').innerHTML=`<h3>${w.name||'Sortie'} <span class="muted" style="font-weight:400">${w.date}</span></h3>
+  const trailBadge=(w.dplus>200)?'<span class="chip" style="background:#2d6a4f;color:#fff;font-size:11px;margin-left:6px">Trail</span>':'';
+  document.getElementById('modal-body').innerHTML=`<h3 id="modal-wo-title">${w.name||'Sortie'} ${trailBadge}<span class="muted" style="font-weight:400">${w.date}</span></h3>
     <div style="display:flex;gap:16px;align-items:center;margin-top:8px">${w.hrZones?pie(w.hrZones,96):'<div class="muted">Pas de capteur FC</div>'}
     <div class="muted" style="font-size:13.5px;line-height:1.7">${w.dist} km · D+ ${w.dplus} m<br>Temps ${mm}:${ss} · Allure ${pace}<br>FC moy ${w.fcavg} · FC max ${w.fcmax}</div></div>${zl}
     <div id="detail-box"></div>
@@ -713,6 +714,15 @@ async function showWorkout(i){
   document.getElementById('modal').classList.add('open');
   jget('/api/workout/detail/'+w.activity_id).then(det=>{
     const box=document.getElementById('detail-box');if(box)box.innerHTML=renderDetail(det);
+    if(det&&det.is_trail&&!trailBadge){
+      const t=document.getElementById('modal-wo-title');
+      if(t&&!t.querySelector('.trail-badge')){
+        const badge=document.createElement('span');badge.className='chip trail-badge';
+        badge.style.cssText='background:#2d6a4f;color:#fff;font-size:11px;margin-left:6px';
+        badge.textContent='Trail';
+        const dateSpan=t.querySelector('.muted');if(dateSpan)t.insertBefore(badge,dateSpan);else t.appendChild(badge);
+      }
+    }
   }).catch(()=>{});
   try{const a=await jget('/api/workout/analysis/'+w.activity_id);
     const box=document.getElementById('ana-box');box.classList.remove('muted');box.textContent=a.analysis_text||'(pas d\'analyse)';
@@ -744,6 +754,24 @@ function renderDetail(det){
       <td style="${cell}">${s.hr?('FC '+s.hr):'—'}</td></tr>`).join('');
     return `<h3 style="margin-top:16px">Splits par km</h3>
       <table style="width:100%;border-collapse:collapse;margin-top:6px;font-size:13px">${rows}</table>`;
+  }
+  if(det.climbs&&det.climbs.length>=1){
+    const c=det.climbs;
+    const fmtS=s=>{const m=Math.floor(s/60);return `${m}:${String(s%60).padStart(2,'0')}`;};
+    const rows=c.map((cl,i)=>`<tr><td style="${cell};text-align:left;color:var(--mut)">#${i+1}</td>
+      <td style="${cell}">${cl.elev_gain!=null?cl.elev_gain+' m':'—'}</td>
+      <td style="${cell}">${cl.grade_pct!=null?cl.grade_pct+'%':'—'}</td>
+      <td style="${cell}">${cl.duration_s!=null?fmtS(cl.duration_s):'—'}</td>
+      <td style="${cell};font-weight:600">${cl.vam_mh!=null?cl.vam_mh:'—'}</td>
+      <td style="${cell}">${cl.avg_hr||'—'}</td></tr>`).join('');
+    const totalDplus=c.reduce((s,cl)=>s+(cl.elev_gain||0),0);
+    const vams=c.filter(cl=>cl.vam_mh!=null).map(cl=>cl.vam_mh);
+    const vamMoy=vams.length?Math.round(vams.reduce((a,b)=>a+b,0)/vams.length):null;
+    const syn=`<div class="muted" style="font-size:12px;margin-top:4px">${c.length} montée${c.length>1?'s':''} · D+ total ${totalDplus} m${vamMoy?' · VAM moy '+vamMoy+' m/h':''}</div>`;
+    return `<h3 style="margin-top:16px">Montées — ${c.length}</h3>
+      <table style="width:100%;border-collapse:collapse;margin-top:6px;font-size:13px">
+      <tr><th style="${head};text-align:left">#</th><th style="${head}">D+</th><th style="${head}">Pente</th><th style="${head}">Durée</th><th style="${head}">VAM (m/h)</th><th style="${head}">FC</th></tr>
+      ${rows}</table>${syn}`;
   }
   return '';
 }
