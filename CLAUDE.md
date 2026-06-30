@@ -25,3 +25,9 @@ Ce fichier = périmètre minimal pour ne PAS ré-explorer tout le repo à chaque
 - Petits diffs sur `index.html`, dans le style inline existant.
 - NE PAS déployer, NE PAS toucher aux services (`coach-sync`, gateway) : éditer le code suffit.
 - Ne pas committer sauf demande explicite.
+
+## Déploiement & git — le harness gère, pas toi
+- Servi par `python3 -m http.server 3000` sur l arbre `master` : éditer un fichier = live au prochain chargement.
+- Tu travailles sur une branche jetable créée par le harness. **NE committe pas, NE merge pas, NE push pas, NE déploie pas.**
+  Le harness fait commit -> merge --no-ff sur master -> push si (et seulement si) le smoke est vert.
+- Ton job : éditer `index.html` + lancer le smoke (build). Rien d autre côté git.
